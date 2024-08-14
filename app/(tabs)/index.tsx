@@ -1,70 +1,173 @@
-import { Image, StyleSheet, Platform } from 'react-native';
-
 import { HelloWave } from '@/components/HelloWave';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+import React from 'react';
+import { View, Text, TextInput, Image, FlatList, ScrollView, StyleSheet, SafeAreaView, Platform } from 'react-native';
+import { Feather } from '@expo/vector-icons'; // Make sure to install expo-vector-icons
 
-export default function HomeScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Kiss me baby</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({ ios: 'cmd + d', android: 'cmd + m' })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this starter app.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          When you're ready, run{' '}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
-  );
+interface Category {
+  id: string;
+  name: string;
+  image: any; // Using 'any' for simplicity, but you might want to use a more specific type
 }
 
+interface RecommendedItem {
+  id: string;
+  name: string;
+  price: string;
+  description: string;
+  address: string;
+  image: any; // Using 'any' for simplicity
+}
+
+const categories: Category[] = [
+  { id: '1', name: 'Bún phở', image: require('../../assets/demo/bunpho.png') },
+  { id: '2', name: 'Bánh mỳ', image: require('../../assets/demo/banhmy.png') },
+  { id: '3', name: 'Bánh mỳ', image: require('../../assets/demo/banhmy.png') },
+  { id: '4', name: 'Bánh mỳ', image: require('../../assets/demo/banhmy.png') },
+];
+
+const recommendedItems: RecommendedItem[] = [
+  { 
+    id: '1', 
+    name: 'Gà rán hàn quốc', 
+    price: '30,000đ', 
+    description: 'Gà rán hàn quốc tương ớt siêu cay', 
+    address: '101 Xuân Thủy, P.Thảo Điền', 
+    image: require('../../assets/demo/bunpho.png') 
+  },
+  // ... add more items as needed
+];
+
+const CategoryItem: React.FC<{ item: Category }> = ({ item }) => (
+  <View style={styles.categoryItem}>
+    <Image source={item.image} style={styles.categoryImage} />
+    <Text style={styles.categoryName}>{item.name}</Text>
+  </View>
+);
+const HomeScreen: React.FC = () => {
+  return (
+    <SafeAreaView style={styles.container}>
+      <View style={styles.header}>
+        <View style={styles.searchBar}>
+          <Feather name="search" size={20} color="#888" />
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Tìm kiếm"
+            placeholderTextColor="#888"
+          />
+        </View>
+        <Feather name="shopping-cart" size={24} color="#000" style={styles.icon} />
+        <Feather name="menu" size={24} color="#000" style={styles.icon} />
+      </View>
+
+      <ScrollView>
+        <FlatList
+          data={categories}
+          renderItem={({ item }) => <CategoryItem item={item} />}
+          keyExtractor={(item) => item.id}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={styles.categoriesList}
+        />
+
+        <View style={styles.recommendedSection}>
+          <Text style={styles.recommendedTitle}>Có thể bạn thích</Text>
+          {/* <FlatList
+            data={recommendedItems}
+            renderItem={({ item }) => <RecommendedItem item={item} />}
+            keyExtractor={(item) => item.id}
+            scrollEnabled={false}
+          /> */}
+        </View>
+      </ScrollView>
+    </SafeAreaView>
+  );
+};
+
 const styles = StyleSheet.create({
-  titleContainer: {
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  header: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    padding: 10,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  searchBar: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#f0f0f0',
+    borderRadius: 20,
+    paddingHorizontal: 10,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  searchInput: {
+    flex: 1,
+    paddingVertical: 8,
+    paddingHorizontal: 5,
+  },
+  icon: {
+    marginLeft: 15,
+  },
+  categoriesList: {
+    paddingVertical: 10,
+  },
+  categoryItem: {
+    alignItems: 'center',
+    marginHorizontal: 10,
+  },
+  categoryImage: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+  },
+  categoryName: {
+    marginTop: 5,
+    fontSize: 12,
+  },
+  recommendedSection: {
+    padding: 10,
+  },
+  recommendedTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  recommendedItem: {
+    flexDirection: 'row',
+    marginBottom: 15,
+  },
+  recommendedImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 10,
+    marginRight: 10,
+  },
+  recommendedInfo: {
+    flex: 1,
+  },
+  recommendedName: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  recommendedPrice: {
+    fontSize: 14,
+    color: '#ff6600',
+    marginTop: 2,
+  },
+  recommendedDescription: {
+    fontSize: 12,
+    color: '#666',
+    marginTop: 2,
+  },
+  recommendedAddress: {
+    fontSize: 12,
+    color: '#888',
+    marginTop: 2,
   },
 });
+
+export default HomeScreen;
