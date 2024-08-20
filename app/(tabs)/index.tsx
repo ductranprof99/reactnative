@@ -1,52 +1,20 @@
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
-import React from 'react';
-import { View, Text, TextInput, Image, FlatList, ScrollView, StyleSheet, SafeAreaView, Platform } from 'react-native';
+import React, { useState, useRef } from 'react';
+import { View, Text, TextInput, Image, FlatList, ScrollView, StyleSheet, SafeAreaView, ViewToken } from 'react-native';
 import { Feather } from '@expo/vector-icons'; // Make sure to install expo-vector-icons
+import { CategoryIndicator } from '@/components/home/CategoryIndicator';
+import { CategoryItem } from '@/components/home/CategoryItem';
+import { RecommendedItemModel, recommendedItems } from '@/models/RecommendModel';
+import { CategoryModel, categories } from '@/models/CategoryModel';
 
-interface Category {
-  id: string;
-  name: string;
-  image: any; // Using 'any' for simplicity, but you might want to use a more specific type
-}
-
-interface RecommendedItem {
-  id: string;
-  name: string;
-  price: string;
-  description: string;
-  address: string;
-  image: any; // Using 'any' for simplicity
-}
-
-const categories: Category[] = [
-  { id: '1', name: 'Bún phở', image: require('../../assets/demo/bunpho.png') },
-  { id: '2', name: 'Bánh mỳ', image: require('../../assets/demo/banhmy.png') },
-  { id: '3', name: 'Bánh mỳ', image: require('../../assets/demo/banhmy.png') },
-  { id: '4', name: 'Bánh mỳ', image: require('../../assets/demo/banhmy.png') },
-];
-
-const recommendedItems: RecommendedItem[] = [
-  { 
-    id: '1', 
-    name: 'Gà rán hàn quốc', 
-    price: '30,000đ', 
-    description: 'Gà rán hàn quốc tương ớt siêu cay', 
-    address: '101 Xuân Thủy, P.Thảo Điền', 
-    image: require('../../assets/demo/bunpho.png') 
-  },
-  // ... add more items as needed
-];
-
-const CategoryItem: React.FC<{ item: Category }> = ({ item }) => (
-  <View style={styles.categoryItem}>
-    <Image source={item.image} style={styles.categoryImage} />
-    <Text style={styles.categoryName}>{item.name}</Text>
-  </View>
-);
 const HomeScreen: React.FC = () => {
+  const [currentCategoryIndex, setCurrentCategoryIndex] = useState<number>(0);
+  const viewabilityConfig = useRef({ itemVisiblePercentThreshold: 50 });
+
+  const onViewableItemsChanged = useRef(({ viewableItems }: { viewableItems: ViewToken[] }) => {
+    if (viewableItems.length > 0) {
+      setCurrentCategoryIndex(viewableItems[0].index || 0);
+    }
+  });
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
@@ -63,14 +31,22 @@ const HomeScreen: React.FC = () => {
       </View>
 
       <ScrollView>
-        <FlatList
-          data={categories}
-          renderItem={({ item }) => <CategoryItem item={item} />}
-          keyExtractor={(item) => item.id}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          style={styles.categoriesList}
-        />
+      <View>
+          <FlatList
+            data={categories}
+            renderItem={({ item }) => <CategoryItem item={item} />}
+            keyExtractor={(item) => item.id}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={styles.categoriesList}
+            onViewableItemsChanged={onViewableItemsChanged.current}
+            viewabilityConfig={viewabilityConfig.current}
+          />
+          <CategoryIndicator
+            categories={categories}
+            currentIndex={currentCategoryIndex}
+          />
+        </View>
 
         <View style={styles.recommendedSection}>
           <Text style={styles.recommendedTitle}>Có thể bạn thích</Text>
@@ -115,19 +91,7 @@ const styles = StyleSheet.create({
   categoriesList: {
     paddingVertical: 10,
   },
-  categoryItem: {
-    alignItems: 'center',
-    marginHorizontal: 10,
-  },
-  categoryImage: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-  },
-  categoryName: {
-    marginTop: 5,
-    fontSize: 12,
-  },
+
   recommendedSection: {
     padding: 10,
   },
