@@ -10,61 +10,61 @@ const { width } = Dimensions.get('window');
 const itemWidth = width - 32; // Assuming 16px padding on each side
 
 export const RecommendedItem: React.FC<RecommendedItemProps> = ({ item }) => {
-  return (
-    <View style={styles.container}>
-      <Image source={item.image} style={styles.image} />
-      <View style={styles.infoContainer}>
-        <Text style={styles.name}>{item.name}</Text>
-        <Text style={styles.price}>{item.price}</Text>
-        <Text style={styles.description}>{item.description}</Text>
-        <Text style={styles.address}>{item.address}</Text>
-      </View>
-    </View>
-  );
+    return (
+        <View style={styles.container}>
+            <Image source={item.image} style={styles.image} />
+            <View style={styles.infoContainer}>
+                <Text style={styles.name}>{item.name}</Text>
+                <Text style={styles.price}>{item.price}</Text>
+                <Text style={styles.description}>{item.description}</Text>
+                <Text style={styles.address}>{item.address}</Text>
+            </View>
+        </View>
+    );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    width: itemWidth,
-    marginBottom: 16,
-    backgroundColor: 'white',
-    borderRadius: 8,
-    overflow: 'hidden',
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
+    container: {
+        width: itemWidth,
+        marginHorizontal: 16,
+        backgroundColor: 'white',
+        borderRadius: 8,
+        overflow: 'hidden',
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.23,
+        shadowRadius: 2.62,
+        elevation: 4,
     },
-    shadowOpacity: 0.23,
-    shadowRadius: 2.62,
-    elevation: 4,
-  },
-  image: {
-    width: '100%',
-    height: 200,
-    resizeMode: 'cover',
-  },
-  infoContainer: {
-    padding: 12,
-  },
-  name: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 4,
-  },
-  price: {
-    fontSize: 16,
-    color: '#FF6B6B',
-    fontWeight: '600',
-    marginBottom: 4,
-  },
-  description: {
-    fontSize: 14,
-    color: '#666',
-    marginBottom: 4,
-  },
-  address: {
-    fontSize: 12,
-    color: '#999',
-  },
+    image: {
+        width: '100%',
+        height: 200,
+        resizeMode: 'cover',
+    },
+    infoContainer: {
+        padding: 12,
+    },
+    name: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginBottom: 4,
+    },
+    price: {
+        fontSize: 16,
+        color: '#FF6B6B',
+        fontWeight: '600',
+        marginBottom: 4,
+    },
+    description: {
+        fontSize: 14,
+        color: '#666',
+        marginBottom: 4,
+    },
+    address: {
+        fontSize: 12,
+        color: '#999',
+    },
 });

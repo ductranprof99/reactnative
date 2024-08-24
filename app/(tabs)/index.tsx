@@ -1,11 +1,12 @@
 import React, { useState, useRef } from 'react';
-import { View, Text, TextInput, Image, FlatList, ScrollView, StyleSheet, SafeAreaView, ViewToken } from 'react-native';
+import { View, Text, TextInput, Dimensions, FlatList, ScrollView, StyleSheet, SafeAreaView, ViewToken } from 'react-native';
 import { Feather } from '@expo/vector-icons'; // Make sure to install expo-vector-icons
 import { CategoryIndicator } from '@/components/home/CategoryIndicator';
 import { CategoryItem } from '@/components/home/CategoryItem';
 import { RecommendedItem } from '@/components/home/RecommendItem';
 import { FoodModel, recommendedItems } from '@/models/FoodModel';
 import { CategoryModel, categories } from '@/models/CategoryModel';
+const { width } = Dimensions.get('window');
 
 const HomeScreen: React.FC = () => {
 	const [currentCategoryIndex, setCurrentCategoryIndex] = useState<number>(0);
@@ -48,9 +49,23 @@ const HomeScreen: React.FC = () => {
 						currentIndex={currentCategoryIndex}
 					/>
 				</View>
-
-				<View style={styles.recommendedSection}>
-					<Text style={styles.recommendedTitle}>Có thể bạn thích</Text>
+				<View style={styles.scrollInside}>
+					<Text style={styles.sectionTitle}>Có thể bạn thích</Text>
+					<FlatList
+						data={recommendedItems}
+						renderItem={({ item }) => <RecommendedItem item={item} />}
+						keyExtractor={(item) => item.id}
+						horizontal
+						pagingEnabled
+						showsHorizontalScrollIndicator={false}
+						snapToAlignment="center"
+						decelerationRate="fast"
+						snapToInterval={width}
+						contentContainerStyle={styles.flatListContent}
+					/>
+				</View>
+				<View style={styles.scrollInside}>
+					<Text style={styles.sectionTitle}>Món ăn thường ngày</Text>
 					<FlatList
 						data={recommendedItems}
 						renderItem={({ item }) => <RecommendedItem item={item} />}
@@ -93,47 +108,18 @@ const styles = StyleSheet.create({
 		paddingVertical: 10,
 	},
 
-	recommendedSection: {
+	scrollInside: {
 		padding: 10,
 		marginLeft: 20,
 		marginRight: 20
 	},
-	recommendedTitle: {
+	flatListContent: {
+		paddingHorizontal: 8, // Half of the item's horizontal margin
+	},
+	sectionTitle: {
 		fontSize: 18,
 		fontWeight: 'bold',
 		marginBottom: 10,
-	},
-	recommendedItem: {
-		flexDirection: 'row',
-		marginBottom: 15,
-	},
-	recommendedImage: {
-		width: 100,
-		height: 100,
-		borderRadius: 10,
-		marginRight: 10,
-	},
-	recommendedInfo: {
-		flex: 1,
-	},
-	recommendedName: {
-		fontSize: 16,
-		fontWeight: 'bold',
-	},
-	recommendedPrice: {
-		fontSize: 14,
-		color: '#ff6600',
-		marginTop: 2,
-	},
-	recommendedDescription: {
-		fontSize: 12,
-		color: '#666',
-		marginTop: 2,
-	},
-	recommendedAddress: {
-		fontSize: 12,
-		color: '#888',
-		marginTop: 2,
 	},
 });
 
