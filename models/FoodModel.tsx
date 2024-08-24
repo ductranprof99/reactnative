@@ -1,4 +1,4 @@
-export interface RecommendedItemModel {
+export interface FoodModel {
     id: string;
     name: string;
     price: string;
@@ -7,7 +7,7 @@ export interface RecommendedItemModel {
     image: any; // Consider using a more specific type if possible
 }
 
-export const recommendedItems: RecommendedItemModel[] = [
+export const recommendedItems: FoodModel[] = [
     {
         id: '1',
         name: 'Gà rán hàn quốc',
