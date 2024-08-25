@@ -6,6 +6,7 @@ import { CategoryItem } from '@/components/home/CategoryItem';
 import { RecommendedItem } from '@/components/home/RecommendItem';
 import { FoodModel, recommendedItems } from '@/models/FoodModel';
 import { CategoryModel, categories } from '@/models/CategoryModel';
+import { FoodItem } from '@/components/home/FoodItem';
 const { width } = Dimensions.get('window');
 
 const HomeScreen: React.FC = () => {
@@ -49,7 +50,7 @@ const HomeScreen: React.FC = () => {
 						currentIndex={currentCategoryIndex}
 					/>
 				</View>
-				<View style={styles.scrollInside}>
+				<View style={styles.scrollVerticalSection}>
 					<Text style={styles.sectionTitle}>Có thể bạn thích</Text>
 					<FlatList
 						data={recommendedItems}
@@ -57,18 +58,25 @@ const HomeScreen: React.FC = () => {
 						keyExtractor={(item) => item.id}
 						horizontal
 						pagingEnabled
+						centerContent
 						showsHorizontalScrollIndicator={false}
 						snapToAlignment="center"
 						decelerationRate="fast"
 						snapToInterval={width}
 						contentContainerStyle={styles.flatListContent}
+						ItemSeparatorComponent={() => <View style={{ width: 16 }} />}
+						getItemLayout={(data, index) => ({
+						length: width,
+						offset: width * index,
+						index,
+						})}
 					/>
 				</View>
-				<View style={styles.scrollInside}>
+				<View style={styles.scrollVerticalSection}>
 					<Text style={styles.sectionTitle}>Món ăn thường ngày</Text>
 					<FlatList
 						data={recommendedItems}
-						renderItem={({ item }) => <RecommendedItem item={item} />}
+						renderItem={({ item }) => <FoodItem item={item} />}
 						keyExtractor={(item) => item.id}
 						scrollEnabled={false}
 					/>
@@ -108,19 +116,19 @@ const styles = StyleSheet.create({
 		paddingVertical: 10,
 	},
 
-	scrollInside: {
+	scrollVerticalSection: {
 		padding: 10,
-		marginLeft: 20,
-		marginRight: 20
 	},
 	flatListContent: {
 		paddingHorizontal: 8, // Half of the item's horizontal margin
 	},
 	sectionTitle: {
-		fontSize: 18,
-		fontWeight: 'bold',
-		marginBottom: 10,
+	fontSize: 20,
+	fontWeight: 'bold',
+	marginBottom: 16,
+	paddingHorizontal: 16,
 	},
+
 });
 
 export default HomeScreen;

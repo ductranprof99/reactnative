@@ -4,13 +4,13 @@ import { View, Image, ImageBackground, StyleSheet } from 'react-native';
 const CustomSplashScreen: React.FC = () => {
 	return (
 		<ImageBackground
-			source={require('../assets/images/splash-background.png')}
+			source={require('../../assets/images/splash-background.png')}
 			style={styles.backgroundImage}
 		>
 			<View style={styles.container}>
 				<View style={styles.logoContainer}>
 					<Image
-						source={require('../assets/images/logo.png')}
+						source={require('../../assets/images/logo.png')}
 						style={styles.logo}
 					/>
 				</View>

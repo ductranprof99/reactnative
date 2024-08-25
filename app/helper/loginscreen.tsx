@@ -5,7 +5,7 @@ const LoginScreen = () => {
   return (
     <View style={styles.container}>
       <Image
-        source={require('../assets/images/logo.png')}
+        source={require('../../assets/images/logo.png')}
         style={styles.logo}
       />
       <Text style={styles.title}>FOODY</Text>

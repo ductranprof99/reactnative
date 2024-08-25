@@ -5,7 +5,7 @@ import * as ExpoSplashScreen from 'expo-splash-screen';
 import { useEffect, useState } from 'react';
 import 'react-native-reanimated';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import CustomSplashScreen from './splashscreen'; // Update this path
+import CustomSplashScreen from './helper/splashscreen'; // Update this path
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 ExpoSplashScreen.preventAutoHideAsync();

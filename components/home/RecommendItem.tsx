@@ -7,7 +7,7 @@ interface RecommendedItemProps {
 }
 
 const { width } = Dimensions.get('window');
-const itemWidth = width - 32; // Assuming 16px padding on each side
+const itemWidth = width - 80; // Assuming 16px padding on each side
 
 export const RecommendedItem: React.FC<RecommendedItemProps> = ({ item }) => {
     return (
