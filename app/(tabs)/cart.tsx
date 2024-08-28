@@ -25,7 +25,7 @@ export default function CartScreen() {
 		>
 			<View>
 				<ScrollView>
-
+          
 				</ScrollView>
 			</View>
 		</MainViewFrame>

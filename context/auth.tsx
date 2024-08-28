@@ -6,7 +6,7 @@ import { useSnackBars } from './snack';
 
 interface User {
 	name: string;
-	password: string;
+	token: string;
 }
 
 interface AuthContextData {
@@ -49,11 +49,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 	async function signIn(name: string, password: string) {
 		const response = await auth.signIn(name, password);
 
-		setUser(response.user);
+		setUser({name: response.username, token: response.token});
 
 		api.defaults.headers.Authorization = `Bearer ${response.token}`;
 
-		await AsyncStorage.setItem('@RNAuth:user', JSON.stringify(response.user));
+		await AsyncStorage.setItem('@RNAuth:username', JSON.stringify(response.username));
 		await AsyncStorage.setItem('@RNAuth:token', JSON.stringify(response.token));
 		addAlert('Bem vindo');
 	}
@@ -61,6 +61,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 	function signOut() {
 		AsyncStorage.clear().then(() => {
 			setUser(null);
+			
 		});
 		addAlert('Falou');
 	}
