@@ -12,7 +12,7 @@ export default function AccountScreen() {
     return (
         <>
             {user == null ? (
-                <LoginScreen onClose={handleLogin} isInAccountScreen={true} />
+                <LoginScreen onClose={handleLogin} isModal={false} />
             ) : (
                 <View>
                     <ScrollView></ScrollView>

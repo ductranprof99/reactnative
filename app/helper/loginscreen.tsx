@@ -3,6 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet, ActivityInd
 import { useSnackBars } from '@/components/utils/snack';
 import { FIREBASE_AUTH } from '@/services/firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
+import { Link } from 'expo-router';
 
 interface LoginScreenProps {
     onClose: () => void;
@@ -37,14 +38,10 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onClose, isModal }) =>
         }
     }
 
-    function handleSignUp() {
-        onClose();
-    }
-
     return (
         <View style={styles.container}>
             {
-                !isModal ?
+                isModal ?
                     <TouchableOpacity style={styles.closeButton} onPress={onClose}>
                         <Text style={styles.closeButtonText}>X</Text>
                     </TouchableOpacity>
@@ -76,9 +73,13 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onClose, isModal }) =>
                         <Text style={styles.loginButtonText}>Đăng nhập</Text>
                 }
             </TouchableOpacity>
-            <TouchableOpacity style={styles.registerButton} onPress={handleSignUp} disabled={loading}>
+            <Link push href="/helper/registerscreen" style={styles.registerButton} onPress={() => {
+                if (isModal) {
+                    onClose()
+                }
+            }}>
                 <Text style={styles.registerButtonText}>Đăng ký tài khoản</Text>
-            </TouchableOpacity>
+            </Link>
         </View>
     );
 };
