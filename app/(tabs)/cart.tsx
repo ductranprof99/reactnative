@@ -1,9 +1,8 @@
-import { Modal, ScrollView, StyleSheet, View } from 'react-native';
+import { Modal, ScrollView, StyleSheet, View, TouchableWithoutFeedback } from 'react-native';
 import { MainViewFrame } from '@/components/navigation/MainViewFrame';
 import { useAuth } from '@/context/auth';
 import { useState } from 'react';
 import { RequireLoginScreen } from '../helper/requirelogin';
-import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import LoginScreen from '../helper/loginscreen';
 
 export default function CartScreen() {
@@ -64,7 +63,7 @@ export default function CartScreen() {
 					<View style={styles.modalOverlay}>
 						<TouchableWithoutFeedback>
 							<View style={styles.modalContent}>
-								<LoginScreen onClose={handleCloseLoginModal} isInAccountScreen={false} />
+								<LoginScreen onClose={handleCloseLoginModal} isModal={false} />
 							</View>
 						</TouchableWithoutFeedback>
 					</View>
@@ -86,6 +85,6 @@ const styles = StyleSheet.create({
 	},
 	modalContent: {
 		width: '100%', // Full width minus some padding
-		height: "100%"
+		height: "75%", 
 	},
 });

@@ -1,42 +1,55 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet } from 'react-native';
-import { useAuth } from '@/context/auth';
+import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet, ActivityIndicator } from 'react-native';
 import { useSnackBars } from '@/components/utils/snack';
+import { FIREBASE_AUTH } from '@/services/firebase';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 
 interface LoginScreenProps {
     onClose: () => void;
-    isInAccountScreen: boolean;
+    isModal: boolean;
 }
 
-export const LoginScreen: React.FC<LoginScreenProps> = ({ onClose, isInAccountScreen }) => {
-    const [name, setName] = useState("");
+export const LoginScreen: React.FC<LoginScreenProps> = ({ onClose, isModal }) => {
+    const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const { signIn } = useAuth();
+    const [loading, setLoading] = useState(false)
+    const auth = FIREBASE_AUTH
     const { addAlert } = useSnackBars();
 
-    function handleSignIn() {
-        if (name.length < 1 || password.length < 8) {
+    async function handleSignIn() {
+        if (email.length < 1 || password.length < 8) {
             addAlert("Please type name and password")
         } else {
-            signIn(name, password);
-            onClose(); 
+            setLoading(true)
+            try {
+                const response = await signInWithEmailAndPassword(auth, email, password)
+                if (response.user) {
+                    onClose();
+                } else {
+                    addAlert("Đăng nhập thất bại!") 
+                }
+            } catch (error: any){
+                console.log(error)
+                addAlert("Đăng nhập thất bại!")
+            } finally {
+                setLoading(false)
+            }
         }
     }
 
-    function navigateToRegisterScreen() {
+    function handleSignUp() {
         onClose();
     }
 
     return (
         <View style={styles.container}>
             {
-                !isInAccountScreen ? 
-                <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-                    <Text style={styles.closeButtonText}>X</Text>
-                </TouchableOpacity>
-                : <></>
+                !isModal ?
+                    <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+                        <Text style={styles.closeButtonText}>X</Text>
+                    </TouchableOpacity>
+                    : <></>
             }
-            
             <Image
                 source={require('../../assets/images/logo.png')}
                 style={styles.logo}
@@ -47,7 +60,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onClose, isInAccountSc
                 style={styles.input}
                 placeholder="Email"
                 keyboardType="email-address"
-                onChangeText={(value: string) => { setName(value) }}
+                onChangeText={(value: string) => { setEmail(value) }}
             />
             <TextInput
                 style={styles.input}
@@ -56,10 +69,14 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onClose, isInAccountSc
                 keyboardType="default"
                 onChangeText={(value: string) => { setPassword(value) }}
             />
-            <TouchableOpacity style={styles.loginButton} onPress={handleSignIn}>
-                <Text style={styles.loginButtonText}>Đăng nhập</Text>
+            <TouchableOpacity style={styles.loginButton} onPress={handleSignIn} disabled={loading}>
+                {
+                    loading ?
+                        <ActivityIndicator size="small" color="#111" /> :
+                        <Text style={styles.loginButtonText}>Đăng nhập</Text>
+                }
             </TouchableOpacity>
-            <TouchableOpacity style={styles.registerButton} onPress={navigateToRegisterScreen}>
+            <TouchableOpacity style={styles.registerButton} onPress={handleSignUp} disabled={loading}>
                 <Text style={styles.registerButtonText}>Đăng ký tài khoản</Text>
             </TouchableOpacity>
         </View>

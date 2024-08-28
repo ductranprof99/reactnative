@@ -63,7 +63,7 @@ export default function HistoryScreen() {
 					<View style={styles.modalOverlay}>
 						<TouchableWithoutFeedback>
 							<View style={styles.modalContent}>
-								<LoginScreen onClose={handleCloseLoginModal} isInAccountScreen={false}/>
+								<LoginScreen onClose={handleCloseLoginModal} isModal={false}/>
 							</View>
 						</TouchableWithoutFeedback>
 					</View>
