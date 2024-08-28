@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
-import { ScrollView, StyleSheet, Dimensions, View, Modal, TouchableWithoutFeedback } from 'react-native';
+import { ScrollView, StyleSheet, View, Modal, TouchableWithoutFeedback } from 'react-native';
 import { MainViewFrame } from '@/components/navigation/MainViewFrame';
-import LoginScreen from '../helper/loginscreen';
+import { LoginScreen } from '../helper/loginscreen';
 import { useAuth } from '@/context/auth';
 import { RequireLoginScreen } from '../helper/requirelogin';
 
-const { width } = Dimensions.get('window');
 export default function HistoryScreen() {
 	const { user } = useAuth();
 	const [isLoginModalVisible, setLoginModalVisible] = useState(false);
@@ -45,12 +44,13 @@ export default function HistoryScreen() {
 						<RequireLoginScreen onLoginPress={handleLoginPress} />
 					</View>
 				) : (
-
 					<View>
 						<ScrollView></ScrollView>
 					</View>
 				)}
 			</MainViewFrame>
+
+
 			<Modal
 				visible={isLoginModalVisible}
 				transparent={true}
@@ -60,7 +60,7 @@ export default function HistoryScreen() {
 				<TouchableWithoutFeedback onPress={handleCloseLoginModal}>
 					<View style={styles.modalOverlay}>
 						<TouchableWithoutFeedback>
-							<View>
+							<View style={styles.modalContent}>
 								<LoginScreen onClose={handleCloseLoginModal} />
 							</View>
 						</TouchableWithoutFeedback>
@@ -79,6 +79,10 @@ const styles = StyleSheet.create({
 		flex: 1,
 		justifyContent: 'center',
 		alignItems: 'center',
-		backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent background
+		backgroundColor: 'rgba(0, 0, 0, 0)', 
+	},
+	modalContent: {
+		width: '100%', // Full width minus some padding
+		height: "100%"
 	},
 });

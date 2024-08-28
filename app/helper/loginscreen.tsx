@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet, SafeAreaView } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import { useAuth } from '@/context/auth';
 import { useSnackBars } from '@/context/snack';
 
 interface LoginScreenProps {
-  onClose: () => void;
+    onClose: () => void;
 }
 
-const LoginScreen: React.FC<LoginScreenProps> = ({ onClose }) => {
+export const LoginScreen: React.FC<LoginScreenProps> = ({ onClose }) => {
     const [name, setName] = useState("");
     const [password, setPassword] = useState("");
     const { signIn } = useAuth();
@@ -18,49 +18,45 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onClose }) => {
             addAlert("Please type name and password")
         } else {
             signIn(name, password);
-            onClose(); // Close the modal after sign in
+            onClose(); 
         }
     }
 
     function navigateToRegisterScreen() {
-        // Implement navigation to register screen
-        // For now, we'll just close the modal
         onClose();
     }
 
     return (
-        <SafeAreaView style={styles.safeAreaStyle}>
-            <View style={styles.container}>
-                <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-                    <Text style={styles.closeButtonText}>X</Text>
-                </TouchableOpacity>
-                <Image
-                    source={require('../../assets/images/logo.png')}
-                    style={styles.logo}
-                />
-                <Text style={styles.title}>FOODY</Text>
-                <Text style={styles.subtitle}>Đăng nhập</Text>
-                <TextInput
-                    style={styles.input}
-                    placeholder="Email"
-                    keyboardType="email-address"
-                    onChangeText={(value: string) => { setName(value) }}
-                />
-                <TextInput
-                    style={styles.input}
-                    secureTextEntry
-                    placeholder="Mật khẩu"
-                    keyboardType="default"
-                    onChangeText={(value: string) => { setPassword(value) }}
-                />
-                <TouchableOpacity style={styles.loginButton} onPress={handleSignIn}>
-                    <Text style={styles.loginButtonText}>Đăng nhập</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.registerButton} onPress={navigateToRegisterScreen}>
-                    <Text style={styles.registerButtonText}>Đăng ký tài khoản</Text>
-                </TouchableOpacity>
-            </View>
-        </SafeAreaView>
+        <View style={styles.container}>
+            <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+                <Text style={styles.closeButtonText}>X</Text>
+            </TouchableOpacity>
+            <Image
+                source={require('../../assets/images/logo.png')}
+                style={styles.logo}
+            />
+            <Text style={styles.title}>FOODY</Text>
+            <Text style={styles.subtitle}>Đăng nhập</Text>
+            <TextInput
+                style={styles.input}
+                placeholder="Email"
+                keyboardType="email-address"
+                onChangeText={(value: string) => { setName(value) }}
+            />
+            <TextInput
+                style={styles.input}
+                secureTextEntry
+                placeholder="Mật khẩu"
+                keyboardType="default"
+                onChangeText={(value: string) => { setPassword(value) }}
+            />
+            <TouchableOpacity style={styles.loginButton} onPress={handleSignIn}>
+                <Text style={styles.loginButtonText}>Đăng nhập</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.registerButton} onPress={navigateToRegisterScreen}>
+                <Text style={styles.registerButtonText}>Đăng ký tài khoản</Text>
+            </TouchableOpacity>
+        </View>
     );
 };
 
@@ -75,9 +71,9 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         padding: 20,
         backgroundColor: '#ffffff',
-        marginVertical: 50, // Add some margin at the top and bottom
-        marginHorizontal: 20, // Add some margin on the sides
-        borderRadius: 10, // Round the corners
+        marginTop: 100,
+        marginBottom: 0,
+        borderRadius: 10,
     },
     closeButton: {
         position: 'absolute',
