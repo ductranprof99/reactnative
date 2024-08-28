@@ -2,7 +2,7 @@ import React, { createContext, useState, useEffect, useContext, ReactNode } from
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import api from '@/services/api';
 import * as auth from '../services/auth';
-import { useSnackBars } from './snack';
+import { useSnackBars } from '../components/utils/snack';
 
 interface User {
 	name: string;

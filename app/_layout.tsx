@@ -7,7 +7,7 @@ import 'react-native-reanimated';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import CustomSplashScreen from './helper/splashscreen'; // Update this path
 import { AuthProvider } from '@/context/auth';
-import { SnackBarProvider } from '@/context/snack';
+import { SnackBarProvider } from '@/components/utils/snack';
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 ExpoSplashScreen.preventAutoHideAsync();
 

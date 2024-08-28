@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import { useAuth } from '@/context/auth';
-import { useSnackBars } from '@/context/snack';
+import { useSnackBars } from '@/components/utils/snack';
 
 interface LoginScreenProps {
     onClose: () => void;
+    isInAccountScreen: boolean;
 }
 
-export const LoginScreen: React.FC<LoginScreenProps> = ({ onClose }) => {
+export const LoginScreen: React.FC<LoginScreenProps> = ({ onClose, isInAccountScreen }) => {
     const [name, setName] = useState("");
     const [password, setPassword] = useState("");
     const { signIn } = useAuth();
@@ -28,9 +29,14 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onClose }) => {
 
     return (
         <View style={styles.container}>
-            <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-                <Text style={styles.closeButtonText}>X</Text>
-            </TouchableOpacity>
+            {
+                !isInAccountScreen ? 
+                <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+                    <Text style={styles.closeButtonText}>X</Text>
+                </TouchableOpacity>
+                : <></>
+            }
+            
             <Image
                 source={require('../../assets/images/logo.png')}
                 style={styles.logo}
@@ -71,8 +77,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         padding: 20,
         backgroundColor: '#ffffff',
-        marginTop: 100,
-        marginBottom: 0,
         borderRadius: 10,
     },
     closeButton: {

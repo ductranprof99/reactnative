@@ -25,6 +25,8 @@ export default function HistoryScreen() {
 	};
 
 	const handleLoginPress = () => {
+		// TODO: if login success then set login modal equal true else do nothing
+		// Load api if login success
 		setLoginModalVisible(true);
 	};
 
@@ -61,7 +63,7 @@ export default function HistoryScreen() {
 					<View style={styles.modalOverlay}>
 						<TouchableWithoutFeedback>
 							<View style={styles.modalContent}>
-								<LoginScreen onClose={handleCloseLoginModal} />
+								<LoginScreen onClose={handleCloseLoginModal} isInAccountScreen={false}/>
 							</View>
 						</TouchableWithoutFeedback>
 					</View>
@@ -83,6 +85,6 @@ const styles = StyleSheet.create({
 	},
 	modalContent: {
 		width: '100%', // Full width minus some padding
-		height: "100%"
+		height: "75%", 
 	},
 });
