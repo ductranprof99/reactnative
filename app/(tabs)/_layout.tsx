@@ -24,7 +24,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="cart"
+        name="order"
         options={{
           title: 'Đơn hàng',
           tabBarIcon: ({ color, focused }) => (

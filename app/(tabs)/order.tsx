@@ -6,7 +6,7 @@ import LoginScreen from '../helper/loginscreen';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { FIREBASE_AUTH } from '@/services/firebase';
 
-export default function CartScreen() {
+export default function OrderScreen() {
 	const [user, setUser] = useState<User | null>(null)
 
 	useEffect(() => {
