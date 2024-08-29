@@ -5,23 +5,23 @@ import { Stack } from 'expo-router';
 import React, { useState } from 'react';
 import { View, Text, Image, ScrollView, StyleSheet } from 'react-native';
 
-export default function CategoryScreen() {
+export const CategoryScreen: React.FC = () => {
     const [foodItems, setFoodItems] = useState<FoodModel[]>([]);
 
     const handleSearchChange = (text: string) => {
-		console.log('Search text:', text);
-		// Implement your search logic here
-	};
+        console.log('Search text:', text);
+        // Implement your search logic here
+    };
 
-	const handleCartPress = () => {
-		console.log('Cart pressed');
-		// Navigate to cart or open cart modal
-	};
+    const handleCartPress = () => {
+        console.log('Cart pressed');
+        // Navigate to cart or open cart modal
+    };
 
-	const handleMenuPress = () => {
-		console.log('Menu pressed');
-		// Open menu or navigate as needed
-	};
+    const handleMenuPress = () => {
+        console.log('Menu pressed');
+        // Open menu or navigate as needed
+    };
 
     const handleQuantityChange = (id: string, quantity: number) => {
         // TODO
@@ -30,28 +30,32 @@ export default function CategoryScreen() {
 
     return (
         <>
-            <Stack.Screen name='categoryscreen' options={{ headerShown: false }} />
+            <Stack.Screen
+                options={{
+                    // headerShown: false 
+                }}
+            />
             <MainViewFrame
                 onSearchChange={handleSearchChange}
-				onCartPress={handleCartPress}
-				onMenuPress={handleMenuPress}
+                onCartPress={handleCartPress}
+                onMenuPress={handleMenuPress}
             >
-            <View style={styles.banner}>
-                <Image
-                    source={require("@/assets/demo/banner_category.png")} // TODO
-                    style={styles.bannerImage}
-                />
-                <Text style={styles.bannerText}>Category Name</Text>
-            </View>
-            <ScrollView style={styles.scrollView}>
-                {foodItems.map((item) => (
-                    <FoodEditItem
-                        key={item.id}
-                        item={item}
-                        onQuantityChange={handleQuantityChange}
+                <View style={styles.banner}>
+                    <Image
+                        source={require("@/assets/demo/banner_category.png")} // TODO
+                        style={styles.bannerImage}
                     />
-                ))}
-            </ScrollView>
+                    <Text style={styles.bannerText}>Category Name</Text>
+                </View>
+                <ScrollView style={styles.scrollView}>
+                    {foodItems.map((item) => (
+                        <FoodEditItem
+                            key={item.id}
+                            item={item}
+                            onQuantityChange={handleQuantityChange}
+                        />
+                    ))}
+                </ScrollView>
             </MainViewFrame>
         </>
     );
@@ -80,3 +84,5 @@ const styles = StyleSheet.create({
         flex: 1,
     },
 });
+
+export default CategoryScreen;

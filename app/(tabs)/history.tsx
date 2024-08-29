@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, View, Modal, TouchableWithoutFeedback } from 'react-native';
 import { MainViewFrame } from '@/components/navigation/MainViewFrame';
 import { LoginScreen } from '../helper/loginscreen';
-import { RequireLoginScreen } from '../helper/needlogin';
+import { RequireLoginScreen } from '../../components/navigation/RequireLoginFrame';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { FIREBASE_AUTH } from '@/services/firebase';
 

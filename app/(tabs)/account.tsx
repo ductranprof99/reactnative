@@ -1,4 +1,4 @@
-import { StyleSheet, View, ScrollView  } from 'react-native';
+import { Platform, SafeAreaView, StatusBar, StyleSheet  } from 'react-native';
 import { LoginScreen } from '../helper/loginscreen';
 import { useEffect, useState } from 'react';
 import { onAuthStateChanged, User } from 'firebase/auth';
@@ -23,12 +23,23 @@ export default function AccountScreen() {
             {user == null ? (
                 <LoginScreen onClose={handleLogin} isModal={false} />
             ) : (
-                <UserProfileScreen/>
+                <SafeAreaView style={styles.container}>
+                    <UserProfileScreen/>
+
+                </SafeAreaView>
             )}
         </>
     );
 }
 
 const styles = StyleSheet.create({
-
+    container: {
+		flex: 1,
+		backgroundColor: "white",
+		paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0
+	},
+	content: {
+		flex: 1,
+		// Add any additional styling for your content area
+	},
 });

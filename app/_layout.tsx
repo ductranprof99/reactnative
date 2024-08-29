@@ -5,7 +5,7 @@ import * as ExpoSplashScreen from 'expo-splash-screen';
 import { useEffect, useState } from 'react';
 import 'react-native-reanimated';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import CustomSplashScreen from './helper/splashscreen'; // Update this path
+import CustomSplashScreen from '../components/navigation/CustomSplashScreen'; // Update this path
 import { SnackBarProvider } from '@/components/utils/snack';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { FIREBASE_AUTH } from '@/services/firebase';
