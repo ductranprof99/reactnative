@@ -1,15 +1,16 @@
-import { View, Image, Text, StyleSheet } from "react-native";
+import { Image, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { CategoryModel } from "@/models/CategoryModel";
 
 export interface CategoryItemProps {
     item: CategoryModel;
+    onTap: (item: CategoryModel) => void
 }
 
-export const CategoryItem: React.FC<CategoryItemProps> = ({ item }) => (
-    <View style={styles.categoryItem}>
+export const CategoryItem: React.FC<CategoryItemProps> = ({ item, onTap }) => (
+    <TouchableOpacity style={styles.categoryItem} onPress={() => onTap(item)}>
         <Image source={item.image} style={styles.categoryImage} />
         <Text style={styles.categoryName}>{item.name}</Text>
-    </View>
+    </TouchableOpacity>
 );
 
 const styles = StyleSheet.create({

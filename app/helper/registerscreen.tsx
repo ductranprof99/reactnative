@@ -18,7 +18,7 @@ export default function RegisterScreen() {
     const backIcon = Platform.OS === "ios" ? "chevron-back" : "arrow-back-sharp";
 
     async function createNewAccount() {
-
+        // TODO
     }
 
     function navigateToPreviousScreen() {

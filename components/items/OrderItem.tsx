@@ -2,14 +2,14 @@ import React from 'react';
 import { View, Text, Image, StyleSheet, Dimensions } from 'react-native';
 import { FoodModel } from '@/models/FoodModel';
 
-interface CartItemProps {
+interface OrderItemProps {
     item: FoodModel;
 }
 
 const { width } = Dimensions.get('window');
 const imageSize = 100; // Adjust this value as needed
 
-export const CartItem: React.FC<CartItemProps> = ({ item }) => {
+export const OrderItem: React.FC<OrderItemProps> = ({ item }) => {
     return (
         <View style={styles.container}>
             <Image source={item.image} style={styles.image} />

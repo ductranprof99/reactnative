@@ -7,6 +7,7 @@ import { FoodModel, recommendedItems } from '@/models/FoodModel';
 import { CategoryModel, categories } from '@/models/CategoryModel';
 import { FoodItem } from '@/components/home/FoodItem';
 import { MainViewFrame } from '@/components/navigation/MainViewFrame';
+import { router } from 'expo-router';
 const { width } = Dimensions.get('window');
 
 const HomeScreen: React.FC = () => {
@@ -34,6 +35,10 @@ const HomeScreen: React.FC = () => {
 		// Open menu or navigate as needed
 	};
 
+	const handleOnTapCategory = (item: CategoryModel) => {
+		router.push("/helper/categoryscreen")
+	}
+
 	return (
 		<MainViewFrame
 			onSearchChange={handleSearchChange}
@@ -47,7 +52,7 @@ const HomeScreen: React.FC = () => {
 					<View>
 						<FlatList
 							data={categories}
-							renderItem={({ item }) => <CategoryItem item={item} />}
+							renderItem={({ item }) => <CategoryItem item={item} onTap={handleOnTapCategory} />}
 							keyExtractor={(item) => item.id}
 							horizontal
 							showsHorizontalScrollIndicator={false}
