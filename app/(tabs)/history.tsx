@@ -1,12 +1,20 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, View, Modal, TouchableWithoutFeedback } from 'react-native';
 import { MainViewFrame } from '@/components/navigation/MainViewFrame';
 import { LoginScreen } from '../helper/loginscreen';
-import { useAuth } from '@/context/auth';
 import { RequireLoginScreen } from '../helper/needlogin';
+import { onAuthStateChanged, User } from 'firebase/auth';
+import { FIREBASE_AUTH } from '@/services/firebase';
 
 export default function HistoryScreen() {
-	const { user } = useAuth();
+	const [user, setUser] = useState<User | null>(null)
+
+	useEffect(() => {
+        onAuthStateChanged(FIREBASE_AUTH, (user) => {
+            setUser(user)
+        })
+    }, [user]);
+
 	const [isLoginModalVisible, setLoginModalVisible] = useState(false);
 
 	const handleSearchChange = (text: string) => {

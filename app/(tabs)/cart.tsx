@@ -1,12 +1,19 @@
 import { Modal, ScrollView, StyleSheet, View, TouchableWithoutFeedback } from 'react-native';
 import { MainViewFrame } from '@/components/navigation/MainViewFrame';
-import { useAuth } from '@/context/auth';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { RequireLoginScreen } from '../helper/needlogin';
 import LoginScreen from '../helper/loginscreen';
+import { onAuthStateChanged, User } from 'firebase/auth';
+import { FIREBASE_AUTH } from '@/services/firebase';
 
 export default function CartScreen() {
-	const { user } = useAuth();
+	const [user, setUser] = useState<User | null>(null)
+
+	useEffect(() => {
+        onAuthStateChanged(FIREBASE_AUTH, (user) => {
+            setUser(user)
+        })
+    }, [user]);
 	const [isLoginModalVisible, setLoginModalVisible] = useState(false);
 
 	const handleSearchChange = (text: string) => {
@@ -47,7 +54,9 @@ export default function CartScreen() {
 					</View>
 				) : (
 					<View>
-						<ScrollView></ScrollView>
+						<ScrollView>
+							
+						</ScrollView>
 					</View>
 				)}
 			</MainViewFrame>

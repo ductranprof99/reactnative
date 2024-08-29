@@ -1,9 +1,18 @@
 import { StyleSheet, View, ScrollView  } from 'react-native';
-import { useAuth } from '@/context/auth';
 import { LoginScreen } from '../helper/loginscreen';
+import { useEffect, useState } from 'react';
+import { onAuthStateChanged, User } from 'firebase/auth';
+import { FIREBASE_AUTH } from '@/services/firebase';
+import UserProfileScreen from '../helper/userdetailscreen';
 
 export default function AccountScreen() {
-    const { user } = useAuth();
+    const [user, setUser] = useState<User | null>(null)
+
+	useEffect(() => {
+        onAuthStateChanged(FIREBASE_AUTH, (user) => {
+            setUser(user)
+        })
+    }, [user]);
 
     function handleLogin() {
 
@@ -14,9 +23,7 @@ export default function AccountScreen() {
             {user == null ? (
                 <LoginScreen onClose={handleLogin} isModal={false} />
             ) : (
-                <View>
-                    <ScrollView></ScrollView>
-                </View>
+                <UserProfileScreen/>
             )}
         </>
     );

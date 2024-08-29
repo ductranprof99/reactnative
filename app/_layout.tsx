@@ -6,12 +6,14 @@ import { useEffect, useState } from 'react';
 import 'react-native-reanimated';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import CustomSplashScreen from './helper/splashscreen'; // Update this path
-import { AuthProvider } from '@/context/auth';
 import { SnackBarProvider } from '@/components/utils/snack';
+import { onAuthStateChanged, User } from 'firebase/auth';
+import { FIREBASE_AUTH } from '@/services/firebase';
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 ExpoSplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
+    const [user, setUser] = useState<User | null>(null)
     const colorScheme = useColorScheme();
     const [loaded] = useFonts({
         SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
@@ -27,6 +29,9 @@ export default function RootLayout() {
             }, 3000);
             return () => clearTimeout(timer);
         }
+        onAuthStateChanged(FIREBASE_AUTH, (user) => {
+            setUser(user)
+        })
     }, [loaded, router]);
 
     if (!loaded || showCustomSplash) {
@@ -35,14 +40,12 @@ export default function RootLayout() {
     // Main view here
     return (
             <SnackBarProvider>
-                <AuthProvider>
                     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
                         <Stack>
                             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
                             <Stack.Screen name="+not-found" />
                         </Stack>
                     </ThemeProvider>
-                </AuthProvider>
             </SnackBarProvider>
     );
 }
