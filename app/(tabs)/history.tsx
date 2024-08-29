@@ -3,7 +3,7 @@ import { ScrollView, StyleSheet, View, Modal, TouchableWithoutFeedback } from 'r
 import { MainViewFrame } from '@/components/navigation/MainViewFrame';
 import { LoginScreen } from '../helper/loginscreen';
 import { useAuth } from '@/context/auth';
-import { RequireLoginScreen } from '../helper/requirelogin';
+import { RequireLoginScreen } from '../helper/needlogin';
 
 export default function HistoryScreen() {
 	const { user } = useAuth();

@@ -2,7 +2,7 @@ import { Modal, ScrollView, StyleSheet, View, TouchableWithoutFeedback } from 'r
 import { MainViewFrame } from '@/components/navigation/MainViewFrame';
 import { useAuth } from '@/context/auth';
 import { useState } from 'react';
-import { RequireLoginScreen } from '../helper/requirelogin';
+import { RequireLoginScreen } from '../helper/needlogin';
 import LoginScreen from '../helper/loginscreen';
 
 export default function CartScreen() {
