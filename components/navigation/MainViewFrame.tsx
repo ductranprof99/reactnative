@@ -4,6 +4,7 @@ import HeaderSearch from './HeaderSearch';
 
 interface ScreenWithHeaderProps {
 	children: ReactNode;
+	onPush?: Boolean;
 	onSearchChange?: (text: string) => void;
 	onCartPress?: () => void;
 	onMenuPress?: () => void;
@@ -11,6 +12,7 @@ interface ScreenWithHeaderProps {
 
 export const MainViewFrame: React.FC<ScreenWithHeaderProps> = ({
 	children,
+	onPush,
 	onSearchChange,
 	onCartPress,
 	onMenuPress
@@ -21,6 +23,7 @@ export const MainViewFrame: React.FC<ScreenWithHeaderProps> = ({
 				onSearchChange={onSearchChange}
 				onCartPress={onCartPress}
 				onMenuPress={onMenuPress}
+				onPush={onPush}
 			/>
 			<View style={styles.content}>
 				{children}

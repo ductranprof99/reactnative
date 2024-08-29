@@ -1,12 +1,12 @@
 import FoodEditItem from '@/components/items/FoodEditItem';
 import { MainViewFrame } from '@/components/navigation/MainViewFrame';
-import { FoodModel } from '@/models/FoodModel';
+import { FoodModel, testCategoryItem } from '@/models/FoodModel';
 import { Stack } from 'expo-router';
 import React, { useState } from 'react';
 import { View, Text, Image, ScrollView, StyleSheet } from 'react-native';
 
 export const CategoryScreen: React.FC = () => {
-    const [foodItems, setFoodItems] = useState<FoodModel[]>([]);
+    const [foodItems, setFoodItems] = useState<FoodModel[]>(testCategoryItem);
 
     const handleSearchChange = (text: string) => {
         console.log('Search text:', text);
@@ -30,22 +30,21 @@ export const CategoryScreen: React.FC = () => {
 
     return (
         <>
-            <Stack.Screen
-                options={{
-                    // headerShown: false 
-                }}
-            />
+            <Stack.Screen/>
             <MainViewFrame
                 onSearchChange={handleSearchChange}
                 onCartPress={handleCartPress}
                 onMenuPress={handleMenuPress}
+                onPush={true}
             >
                 <View style={styles.banner}>
                     <Image
                         source={require("@/assets/demo/banner_category.png")} // TODO
                         style={styles.bannerImage}
                     />
-                    <Text style={styles.bannerText}>Category Name</Text>
+                    <View style={styles.textBannerBackground}>
+                        <Text style={styles.bannerText}>Category Nfasdfame</Text>
+                    </View>
                 </View>
                 <ScrollView style={styles.scrollView}>
                     {foodItems.map((item) => (
@@ -63,7 +62,8 @@ export const CategoryScreen: React.FC = () => {
 
 const styles = StyleSheet.create({
     banner: {
-        height: 200,
+        height: 150,
+        margin: 20,
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -72,16 +72,23 @@ const styles = StyleSheet.create({
         width: '100%',
         height: '100%',
     },
+    textBannerBackground : {
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 40,
+        width: 'auto',
+        height: 'auto',
+        backgroundColor: "rgba(255,255,255, 0.81)"
+    },
     bannerText: {
-        fontSize: 24,
+        fontSize: 20,
         fontWeight: 'bold',
-        color: '#ffffff',
-        textShadowColor: 'rgba(0, 0, 0, 0.75)',
-        textShadowOffset: { width: -1, height: 1 },
+        color: '#000000',
         textShadowRadius: 10,
     },
     scrollView: {
         flex: 1,
+        marginHorizontal: 20
     },
 });
 

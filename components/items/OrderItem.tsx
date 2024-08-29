@@ -17,7 +17,6 @@ export const OrderItem: React.FC<OrderItemProps> = ({ item }) => {
                 <Text style={styles.name}>{item.name}</Text>
                 <Text style={styles.price}>{item.price}</Text>
                 <Text style={styles.description} numberOfLines={2}>{item.description}</Text>
-                <Text style={styles.address}>{item.address}</Text>
             </View>
         </View>
     );
@@ -63,9 +62,5 @@ const styles = StyleSheet.create({
     description: {
         fontSize: 12,
         color: '#666',
-    },
-    address: {
-        fontSize: 10,
-        color: '#999',
-    },
+    }
 });

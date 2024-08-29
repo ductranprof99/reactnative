@@ -17,7 +17,6 @@ export const RecommendedItem: React.FC<RecommendedItemProps> = ({ item }) => {
                 <Text style={styles.name}>{item.name}</Text>
                 <Text style={styles.price}>{item.price}</Text>
                 <Text style={styles.description}>{item.description}</Text>
-                <Text style={styles.address}>{item.address}</Text>
             </View>
         </View>
     );
@@ -62,9 +61,5 @@ const styles = StyleSheet.create({
         fontSize: 14,
         color: '#666',
         marginBottom: 4,
-    },
-    address: {
-        fontSize: 12,
-        color: '#999',
-    },
+    }
 });
