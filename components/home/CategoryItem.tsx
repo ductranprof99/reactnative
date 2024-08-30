@@ -8,7 +8,7 @@ export interface CategoryItemProps {
 
 export const CategoryItem: React.FC<CategoryItemProps> = ({ item, onTap }) => (
     <TouchableOpacity style={styles.categoryItem} onPress={() => onTap(item)}>
-        <Image source={item.image} style={styles.categoryImage} />
+        <Image src={item.image} style={styles.categoryImage} />
         <Text style={styles.categoryName}>{item.name}</Text>
     </TouchableOpacity>
 );

@@ -1,18 +1,34 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, Dimensions, FlatList, ScrollView, StyleSheet, ViewToken } from 'react-native';
 import { CategoryIndicator } from '@/components/home/CategoryIndicator';
 import { CategoryItem } from '@/components/home/CategoryItem';
 import { RecommendedItem } from '@/components/home/RecommendItem';
 import { FoodModel, recommendedItems } from '@/models/FoodModel';
-import { CategoryModel, categories } from '@/models/CategoryModel';
+import { CategoryModel } from '@/models/CategoryModel';
 import { FoodItem } from '@/components/home/FoodItem';
 import { MainViewFrame } from '@/components/navigation/MainViewFrame';
 import { router } from 'expo-router';
+import { getCategory } from '@/services/api';
 const { width } = Dimensions.get('window');
+
+interface HomeScreenData {
+	categories: CategoryModel[];
+	recommends: FoodModel[];
+	foods: FoodModel[];
+}
 
 const HomeScreen: React.FC = () => {
 	const [currentCategoryIndex, setCurrentCategoryIndex] = useState<number>(0);
-	const viewabilityConfig = useRef({ itemVisiblePercentThreshold: 50 });
+	const [homeData, setHomeData] = useState<HomeScreenData>({categories: [], recommends: [], foods: []});
+	const viewabilityConfig = useRef({ itemVisiblePercentThreshold: 1 });
+
+	useEffect(() => {
+        const subscriber = getCategory()
+		subscriber.then((listCat)=> {
+			setHomeData({categories: listCat, recommends: [], foods: []})
+		})
+
+    }, [homeData]);
 
 	const onViewableItemsChanged = useRef(({ viewableItems }: { viewableItems: ViewToken[] }) => {
 		if (viewableItems.length > 0) {
@@ -51,7 +67,7 @@ const HomeScreen: React.FC = () => {
 				<ScrollView>
 					<View>
 						<FlatList
-							data={categories}
+							data={homeData.categories}
 							renderItem={({ item }) => <CategoryItem item={item} onTap={handleOnTapCategory} />}
 							keyExtractor={(item) => item.id}
 							horizontal
@@ -61,7 +77,7 @@ const HomeScreen: React.FC = () => {
 							viewabilityConfig={viewabilityConfig.current}
 						/>
 						<CategoryIndicator
-							categories={categories}
+							categories={homeData.categories}
 							currentIndex={currentCategoryIndex}
 						/>
 					</View>
