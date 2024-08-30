@@ -51,8 +51,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onClose, isModal }) =>
                 source={require('../../assets/images/logo.png')}
                 style={styles.logo}
             />
-            <Text style={styles.title}>FOODY</Text>
-            <Text style={styles.subtitle}>Đăng nhập</Text>
+            <Text style={styles.title}>Đăng nhập</Text>
             <TextInput
                 style={styles.input}
                 placeholder="Email"
@@ -116,8 +115,9 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 24,
         fontWeight: 'bold',
-        color: '#FFD700', // Golden color for FOODY
-        marginBottom: 5,
+        color: '#4CAF50',
+        marginBottom: 20,
+        alignSelf: 'center',
     },
     subtitle: {
         fontSize: 18,

@@ -15,7 +15,7 @@ export const RecommendedItem: React.FC<RecommendedItemProps> = ({ item }) => {
             <Image source={item.image} style={styles.image} />
             <View style={styles.infoContainer}>
                 <Text style={styles.name}>{item.name}</Text>
-                <Text style={styles.price}>{item.price}</Text>
+                <Text style={styles.price}>{item.price.toLocaleString()}đ</Text>
                 <Text style={styles.description}>{item.description}</Text>
             </View>
         </View>

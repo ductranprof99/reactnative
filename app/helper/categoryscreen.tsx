@@ -1,12 +1,23 @@
+import React, { useState, useEffect } from 'react';
+import { View, Text, Image, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
+import { Stack } from 'expo-router';
 import FoodEditItem from '@/components/items/FoodEditItem';
 import { MainViewFrame } from '@/components/navigation/MainViewFrame';
 import { FoodModel, testCategoryItem } from '@/models/FoodModel';
-import { Stack } from 'expo-router';
-import React, { useState } from 'react';
-import { View, Text, Image, ScrollView, StyleSheet } from 'react-native';
+import { BottomDialog, SelectedItem } from '@/components/utils/BottomModal';
 
 export const CategoryScreen: React.FC = () => {
     const [foodItems, setFoodItems] = useState<FoodModel[]>(testCategoryItem);
+    const [selectedItems, setSelectedItems] = useState<SelectedItem[]>([]);
+    const [showBottomDialog, setShowBottomDialog] = useState(false);
+
+    useEffect(() => {
+        if (selectedItems.length > 0) {
+            setShowBottomDialog(true);
+        } else {
+            setShowBottomDialog(false);
+        }
+    }, [selectedItems]);
 
     const handleSearchChange = (text: string) => {
         console.log('Search text:', text);
@@ -24,13 +35,37 @@ export const CategoryScreen: React.FC = () => {
     };
 
     const handleQuantityChange = (id: string, quantity: number) => {
-        // TODO
-        console.log(`Item ${id} quantity changed to ${quantity}`);
+        setSelectedItems(prevItems => {
+            const existingItemIndex = prevItems.findIndex(item => item.id === id);
+            if (existingItemIndex !== -1) {
+                // Item already exists in the selected items
+                if (quantity > 0) {
+                    // Update the quantity
+                    return prevItems.map(item => 
+                        item.id === id ? { ...item, quantity } : item
+                    );
+                } else {
+                    // Remove the item if quantity is 0
+                    return prevItems.filter(item => item.id !== id);
+                }
+            } else if (quantity > 0) {
+                // Add new item
+                const newItem = foodItems.find(item => item.id === id);
+                if (newItem) {
+                    return [...prevItems, { ...newItem, quantity }];
+                }
+            }
+            return prevItems; // No changes if item not found or quantity is 0 for new item
+        });
     };
+
+    const handleCreateOrder = async () => {
+
+    }
 
     return (
         <>
-            <Stack.Screen/>
+            <Stack.Screen />
             <MainViewFrame
                 onSearchChange={handleSearchChange}
                 onCartPress={handleCartPress}
@@ -39,11 +74,11 @@ export const CategoryScreen: React.FC = () => {
             >
                 <View style={styles.banner}>
                     <Image
-                        source={require("@/assets/demo/banner_category.png")} // TODO
+                        source={require("@/assets/demo/banner_category.png")}
                         style={styles.bannerImage}
                     />
                     <View style={styles.textBannerBackground}>
-                        <Text style={styles.bannerText}>Category Nfasdfame</Text>
+                        <Text style={styles.bannerText}>Category Name</Text>
                     </View>
                 </View>
                 <ScrollView style={styles.scrollView}>
@@ -55,6 +90,13 @@ export const CategoryScreen: React.FC = () => {
                         />
                     ))}
                 </ScrollView>
+                {showBottomDialog && (
+                    <BottomDialog
+                        selectedItems={selectedItems}
+                        onPressOrder={() => handleCreateOrder()}
+                        onClose={() => setShowBottomDialog(false)}
+                    />
+                )}
             </MainViewFrame>
         </>
     );
@@ -72,7 +114,7 @@ const styles = StyleSheet.create({
         width: '100%',
         height: '100%',
     },
-    textBannerBackground : {
+    textBannerBackground: {
         justifyContent: 'center',
         alignItems: 'center',
         padding: 40,
@@ -90,6 +132,7 @@ const styles = StyleSheet.create({
         flex: 1,
         marginHorizontal: 20
     },
+    
 });
 
 export default CategoryScreen;
