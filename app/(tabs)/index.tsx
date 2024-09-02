@@ -10,7 +10,7 @@ import { MainViewFrame } from '@/components/navigation/MainViewFrame';
 import { router } from 'expo-router';
 import { getCategory } from '@/services/api';
 const { width } = Dimensions.get('window');
-
+import { useNavigation } from 'expo-router';
 interface HomeScreenData {
 	categories: CategoryModel[];
 	recommends: FoodModel[];
@@ -21,14 +21,16 @@ const HomeScreen: React.FC = () => {
 	const [currentCategoryIndex, setCurrentCategoryIndex] = useState<number>(0);
 	const [homeData, setHomeData] = useState<HomeScreenData>({categories: [], recommends: [], foods: []});
 	const viewabilityConfig = useRef({ itemVisiblePercentThreshold: 1 });
+	const navigation = useNavigation();
 
 	useEffect(() => {
         const subscriber = getCategory()
 		subscriber.then((listCat)=> {
 			setHomeData({categories: listCat, recommends: [], foods: []})
+			console.log("call home request")
 		})
 
-    }, [homeData]);
+    }, []);
 
 	const onViewableItemsChanged = useRef(({ viewableItems }: { viewableItems: ViewToken[] }) => {
 		if (viewableItems.length > 0) {
@@ -52,7 +54,7 @@ const HomeScreen: React.FC = () => {
 	};
 
 	const handleOnTapCategory = (item: CategoryModel) => {
-		router.push("/helper/categoryscreen")
+		router.push({ pathname: `helper/category/[id]`, params: { id: item.catId, banner: item.banner, categoryName: item.name } });
 	}
 
 	return (

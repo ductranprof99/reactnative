@@ -26,11 +26,11 @@ const FoodEditItem: React.FC<FoodEditItemProps> = ({ item, onQuantityChange }) =
 
     return (
         <View style={styles.foodItem}>
-            <Image source={{ uri: item.image }} style={styles.foodImage} />
+            <Image src={item.image} style={styles.foodImage} />
             <View style={styles.foodInfo}>
                 <Text style={styles.foodName}>{item.name}</Text>
                 <Text style={styles.foodPrice}>{item.price.toLocaleString()}đ</Text>
-                <Text style={styles.foodDescription}>{item.description}</Text>
+                <Text style={styles.foodDescription} numberOfLines={3}>{item.description}</Text>
             </View>
             <View style={styles.quantityControl}>
                 <TouchableOpacity onPress={handleDecrement} style={styles.quantityButton}>
@@ -86,19 +86,18 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        width: 80,
+        width: 50,
     },
     quantityButton: {
-        width: 24,
-        height: 24,
-        borderRadius: 12,
-        backgroundColor: '#3498db',
+        width: 15,
+        height: 15,
+        backgroundColor: 'white',
         justifyContent: 'center',
         alignItems: 'center',
     },
     quantityButtonText: {
-        color: '#ffffff',
-        fontSize: 16,
+        color: '#000000',
+        fontSize: 13,
         fontWeight: 'bold',
     },
     quantityText: {

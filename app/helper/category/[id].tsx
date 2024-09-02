@@ -1,17 +1,30 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, Image, ScrollView, StyleSheet } from 'react-native';
 import { Stack } from 'expo-router';
 import FoodEditItem from '@/components/items/FoodEditItem';
 import { MainViewFrame } from '@/components/navigation/MainViewFrame';
 import { FoodModel, testCategoryItem } from '@/models/FoodModel';
 import { BottomDialog, SelectedItem } from '@/components/utils/BottomModal';
+import { useLocalSearchParams } from 'expo-router';
+import { getFoodByCategory } from '@/services/api';
 
-export const CategoryScreen: React.FC = () => {
+export const Category: React.FC = () => {
     const [foodItems, setFoodItems] = useState<FoodModel[]>(testCategoryItem);
     const [selectedItems, setSelectedItems] = useState<SelectedItem[]>([]);
     const [showBottomDialog, setShowBottomDialog] = useState(false);
+    const local = useLocalSearchParams();
+    const banner = String(local.banner);
+    const categoryName = String(local.categoryName)
+    const categoryId = String(local.id);
 
     useEffect(() => {
+        const getFoodRequest = getFoodByCategory(categoryId)
+        getFoodRequest.then((listFood) => {
+            setFoodItems(listFood)
+        }).catch((error) => {
+            console.log(error)
+        });
+
         if (selectedItems.length > 0) {
             setShowBottomDialog(true);
         } else {
@@ -41,7 +54,7 @@ export const CategoryScreen: React.FC = () => {
                 // Item already exists in the selected items
                 if (quantity > 0) {
                     // Update the quantity
-                    return prevItems.map(item => 
+                    return prevItems.map(item =>
                         item.id === id ? { ...item, quantity } : item
                     );
                 } else {
@@ -65,7 +78,7 @@ export const CategoryScreen: React.FC = () => {
 
     return (
         <>
-            <Stack.Screen />
+            <Stack.Screen options={{ headerShown: false }} />
             <MainViewFrame
                 onSearchChange={handleSearchChange}
                 onCartPress={handleCartPress}
@@ -74,11 +87,11 @@ export const CategoryScreen: React.FC = () => {
             >
                 <View style={styles.banner}>
                     <Image
-                        source={require("@/assets/demo/banner_category.png")}
+                        src={banner}
                         style={styles.bannerImage}
                     />
                     <View style={styles.textBannerBackground}>
-                        <Text style={styles.bannerText}>Category Name</Text>
+                        <Text style={styles.bannerText}>{categoryName}</Text>
                     </View>
                 </View>
                 <ScrollView style={styles.scrollView}>
@@ -132,7 +145,7 @@ const styles = StyleSheet.create({
         flex: 1,
         marginHorizontal: 20
     },
-    
+
 });
 
-export default CategoryScreen;
+export default Category;
