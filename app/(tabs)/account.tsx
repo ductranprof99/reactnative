@@ -1,9 +1,9 @@
 import { Platform, SafeAreaView, StatusBar, StyleSheet  } from 'react-native';
-import { LoginScreen } from '../helper/loginscreen';
+import { LoginScreen } from '@/app/layout/loginscreen';
 import { useEffect, useState } from 'react';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { FIREBASE_AUTH } from '@/services/firebase';
-import UserProfileScreen from '../helper/userdetailscreen';
+import { UserProfileScreen } from '@/app/layout/userdetailscreen';
 
 export default function AccountScreen() {
     const [user, setUser] = useState<User | null>(null)

@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, View, Modal, TouchableWithoutFeedback } from 'react-native';
 import { MainViewFrame } from '@/components/navigation/MainViewFrame';
-import { LoginScreen } from '../helper/loginscreen';
-import { RequireLoginScreen } from '../../components/navigation/RequireLoginFrame';
+import { LoginScreen } from '@/app/layout/loginscreen';
+import { RequireLoginScreen } from '@/components/navigation/RequireLoginFrame';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { FIREBASE_AUTH } from '@/services/firebase';
+import { router } from 'expo-router';
 
 export default function HistoryScreen() {
 	const [user, setUser] = useState<User | null>(null)
+	const [isLoginModalVisible, setLoginModalVisible] = useState(false);
 
 	useEffect(() => {
         onAuthStateChanged(FIREBASE_AUTH, (user) => {
@@ -15,21 +17,21 @@ export default function HistoryScreen() {
         })
     }, [user]);
 
-	const [isLoginModalVisible, setLoginModalVisible] = useState(false);
-
 	const handleSearchChange = (text: string) => {
 		console.log('Search text:', text);
 		// Implement your search logic here
 	};
 
 	const handleCartPress = () => {
-		console.log('Cart pressed');
-		// Navigate to cart or open cart modal
+		if (user !== null) {
+			router.push('/layout/cartscreen')
+		} else {
+			setLoginModalVisible(true)
+		}
 	};
 
 	const handleMenuPress = () => {
-		console.log('Menu pressed');
-		// Open menu or navigate as needed
+		router.push('/layout/menuscreen')
 	};
 
 	const handleLoginPress = () => {
