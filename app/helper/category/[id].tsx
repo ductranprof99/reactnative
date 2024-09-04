@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, Image, ScrollView, StyleSheet, ActivityIndicator } from 'react-native';
 import { Stack } from 'expo-router';
 import FoodEditItem from '@/components/items/FoodEditItem';
 import { MainViewFrame } from '@/components/navigation/MainViewFrame';
-import { FoodModel, testCategoryItem } from '@/models/FoodModel';
+import { FoodModel } from '@/models/FoodModel';
 import { BottomDialog, SelectedItem } from '@/components/utils/BottomModal';
 import { useLocalSearchParams } from 'expo-router';
 import { getFoodByCategory } from '@/services/api';
 
 export const Category: React.FC = () => {
-    const [foodItems, setFoodItems] = useState<FoodModel[]>(testCategoryItem);
+    const [foodItems, setFoodItems] = useState<FoodModel[]>([]);
     const [selectedItems, setSelectedItems] = useState<SelectedItem[]>([]);
     const [showBottomDialog, setShowBottomDialog] = useState(false);
     const local = useLocalSearchParams();
@@ -94,15 +94,19 @@ export const Category: React.FC = () => {
                         <Text style={styles.bannerText}>{categoryName}</Text>
                     </View>
                 </View>
-                <ScrollView style={styles.scrollView}>
-                    {foodItems.map((item) => (
-                        <FoodEditItem
-                            key={item.id}
-                            item={item}
-                            onQuantityChange={handleQuantityChange}
-                        />
-                    ))}
-                </ScrollView>
+                {(foodItems.length == 0) ?
+                    <ActivityIndicator size="large" color="#00ff00" />
+                    :
+                    <ScrollView style={styles.scrollView}>
+                        {foodItems.map((item) => (
+                            <FoodEditItem
+                                key={item.id}
+                                item={item}
+                                onQuantityChange={handleQuantityChange}
+                            />
+                        ))}
+                    </ScrollView>
+                }
                 {showBottomDialog && (
                     <BottomDialog
                         selectedItems={selectedItems}

@@ -7,12 +7,12 @@ interface RecommendedItemProps {
 }
 
 const { width } = Dimensions.get('window');
-const itemWidth = width - 80; // Assuming 16px padding on each side
+const itemWidth = width - 40 - 12; // Assuming 16px padding on each side
 
 export const RecommendedItem: React.FC<RecommendedItemProps> = ({ item }) => {
     return (
         <View style={styles.container}>
-            <Image source={item.image} style={styles.image} />
+            <Image src={item.image} style={styles.image} />
             <View style={styles.infoContainer}>
                 <Text style={styles.name}>{item.name}</Text>
                 <Text style={styles.price}>{item.price.toLocaleString()}đ</Text>
