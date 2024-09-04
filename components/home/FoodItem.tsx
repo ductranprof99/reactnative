@@ -12,7 +12,7 @@ const imageSize = 100; // Adjust this value as needed
 export const FoodItem: React.FC<FoodItemProps> = ({ item }) => {
   return (
     <View style={styles.container}>
-      <Image source={item.image} style={styles.image} />
+      <Image src={item.image} style={styles.image} />
       <View style={styles.infoContainer}>
         <Text style={styles.name}>{item.name}</Text>
         <Text style={styles.price}>{item.price.toLocaleString()}đ</Text>
