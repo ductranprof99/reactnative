@@ -1,21 +1,74 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import { Stack } from 'expo-router';
-import { Platform, StatusBar, SafeAreaView, StyleSheet, TextInput, View, TouchableOpacity, Image, ScrollView } from 'react-native';
+import { Platform, StatusBar, SafeAreaView, StyleSheet, TextInput, View, TouchableOpacity, Image, ScrollView, Modal, TouchableWithoutFeedback } from 'react-native';
 import { ThemedText } from '@/components/utils/ThemedText';
 import { ThemedView } from '@/components/utils/ThemedView';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-function LogoTitle() {
-    return (
-        <Image
-            source={require('@/assets/images/logo.png')}
-            style={styles.logo}
-        />
-    );
+import RadioGroup, { RadioButtonProps } from 'react-native-radio-buttons-group';
+import DateTimePicker, { DateType } from 'react-native-ui-datepicker'
+import dayjs from 'dayjs'
+import * as ImagePicker from 'react-native-image-picker';
+
+interface RegisterData {
+    name: string;
+    birthDay: string;
+    gender: string;
+    phone: string;
+    address: string;
+    email: string;
+    password: string;
 }
 
 export default function RegisterScreen() {
     const backIcon = Platform.OS === "ios" ? "chevron-back" : "arrow-back-sharp";
+    const [selectedId, setSelectedId] = useState<string | undefined>();
+    const [openDate, setOpenDate] = useState(false)
+    const [dates, setDates] = useState<DateType | undefined>();
+    const [imageUri, setImageUri] = useState<string | null>(null);
+
+    const [registerData, setRegisterData] = useState<RegisterData>({
+        name: '',
+        birthDay: '',
+        gender: '',
+        phone: '',
+        address: '',
+        email: '',
+        password: ''
+    });
+    const radioButtons: RadioButtonProps[] = useMemo(() => ([
+        {
+            id: '1', // acts as primary key, should be unique and non-empty string
+            label: 'Nam',
+            value: 'Nam',
+            color: '#4CAF50'
+        },
+        {
+            id: '2',
+            label: 'Nữ',
+            value: 'Nữ',
+            color: '#4CAF50'
+        },
+        {
+            id: '3',
+            label: 'Khác',
+            value: 'Khác',
+            color: '#4CAF50'
+        }
+    ]), []);
+
+    const pickImage = async () => {
+        const result = await ImagePicker.launchImageLibrary({
+            mediaType: 'photo',
+            quality: 1, // You can adjust the quality from 0 to 1
+        });
+
+        if (result.assets && result.assets.length > 0) {
+            if (result.assets[0].uri !== undefined) {
+                setImageUri(result.assets[0].uri); // Get the image URI
+            }
+        }
+    };
 
     async function createNewAccount() {
         // TODO
@@ -42,7 +95,10 @@ export default function RegisterScreen() {
                             onPress={() => router.back()}
                         />
                     },
-                    headerTitle: props => <LogoTitle />,
+                    headerTitle: props => <Image
+                        source={require('@/assets/images/logo.png')}
+                        style={styles.logo}
+                    />,
                 }}
             />
             <SafeAreaView style={styles.android_safeview}>
@@ -54,8 +110,9 @@ export default function RegisterScreen() {
                             <ThemedText style={styles.label}>Họ và tên <ThemedText style={styles.required}>(bắt buộc)</ThemedText></ThemedText>
                             <TextInput
                                 style={styles.input}
-                                placeholder="Nhập thông tin"
+                                placeholder="Trần Văn A"
                                 placeholderTextColor="#999"
+                                onEndEditing={(event) => { setRegisterData({ ...registerData, name: event.nativeEvent.text }) }}
                             />
                         </View>
 
@@ -63,32 +120,34 @@ export default function RegisterScreen() {
                             <ThemedText style={styles.label}>Ngày sinh</ThemedText>
                             <TextInput
                                 style={styles.input}
-                                placeholder="Nhập thông tin"
+                                placeholder="01/01/2000"
                                 placeholderTextColor="#999"
+                                // onEndEditing={(event) => { event.nativeEvent.text }}
+                                readOnly
+                                onPress={() => setOpenDate(true)}
+                                value={registerData.birthDay}
                             />
                         </View>
 
                         <View style={styles.inputContainer}>
                             <ThemedText style={styles.label}>Giới tính</ThemedText>
+
                             <View style={styles.radioContainer}>
-                                <TouchableOpacity style={styles.radioButton}>
-                                    <View style={styles.radioOuterCircle}>
-                                        <View style={styles.radioInnerCircle} />
-                                    </View>
-                                    <ThemedText style={styles.radioLabel}>Nam</ThemedText>
-                                </TouchableOpacity>
-                                <TouchableOpacity style={styles.radioButton}>
-                                    <View style={styles.radioOuterCircle}>
-                                        <View style={styles.radioInnerCircle} />
-                                    </View>
-                                    <ThemedText style={styles.radioLabel}>Nữ</ThemedText>
-                                </TouchableOpacity>
-                                <TouchableOpacity style={styles.radioButton}>
-                                    <View style={styles.radioOuterCircle}>
-                                        <View style={styles.radioInnerCircle} />
-                                    </View>
-                                    <ThemedText style={styles.radioLabel}>Khác</ThemedText>
-                                </TouchableOpacity>
+                                <RadioGroup
+                                    radioButtons={radioButtons}
+                                    onPress={(value) => {
+                                        radioButtons.forEach(element => {
+                                            if (element.id == value && element.value !== undefined) {
+                                                setRegisterData({ ...registerData, gender: element.value })
+                                            }
+                                        });
+                                        setSelectedId(value)
+
+                                    }}
+                                    selectedId={selectedId}
+                                    layout='row'
+                                />
+
                             </View>
                         </View>
 
@@ -98,6 +157,7 @@ export default function RegisterScreen() {
                                 style={styles.input}
                                 placeholder="0987654321"
                                 placeholderTextColor="#999"
+                                onEndEditing={(event) => { setRegisterData({ ...registerData, phone: event.nativeEvent.text }) }}
                             />
                         </View>
 
@@ -105,14 +165,18 @@ export default function RegisterScreen() {
                             <ThemedText style={styles.label}>Địa chỉ <ThemedText style={styles.required}>(bắt buộc)</ThemedText></ThemedText>
                             <TextInput
                                 style={styles.input}
-                                placeholder="Nhập thông tin"
+                                placeholder="Quận 1, TP Hồ Chí Minh"
                                 placeholderTextColor="#999"
+                                onEndEditing={(event) => { setRegisterData({ ...registerData, phone: event.nativeEvent.text }) }}
                             />
                         </View>
 
                         <View style={styles.inputContainer}>
                             <ThemedText style={styles.label}>Hình đại diện</ThemedText>
-                            <TouchableOpacity style={styles.imagePickerButton}>
+                            {imageUri && (
+                                <Image source={{ uri: imageUri }} style={styles.imagePreview} />
+                            )}
+                            <TouchableOpacity style={styles.imagePickerButton} onPress={pickImage}>
                                 <ThemedText style={styles.imagePickerText}>Chọn hình</ThemedText>
                             </TouchableOpacity>
                         </View>
@@ -123,6 +187,7 @@ export default function RegisterScreen() {
                                 style={styles.input}
                                 placeholder="Nhập thông tin"
                                 placeholderTextColor="#999"
+                                onEndEditing={(event) => { setRegisterData({ ...registerData, email: event.nativeEvent.text }) }}
                             />
                         </View>
 
@@ -133,6 +198,7 @@ export default function RegisterScreen() {
                                 placeholder="Nhập thông tin"
                                 placeholderTextColor="#999"
                                 secureTextEntry
+                                onEndEditing={(event) => { setRegisterData({ ...registerData, password: event.nativeEvent.text }) }}
                             />
                         </View>
 
@@ -144,6 +210,36 @@ export default function RegisterScreen() {
                         </TouchableOpacity>
                     </ThemedView>
                 </ScrollView>
+                <Modal
+                    visible={openDate}
+                    transparent={false}
+                    animationType="slide"
+                    onRequestClose={() => setOpenDate(false)}
+                >
+                    <TouchableWithoutFeedback onPress={() => setOpenDate(false)}>
+                        <View style={styles.modalOverlay}>
+                            <TouchableWithoutFeedback>
+                                <View style={styles.modalContent}>
+                                    <DateTimePicker
+                                        mode="single"
+                                        date={dates}
+                                        onChange={(params) => {
+                                            const selectedDate = dayjs(params.date);
+                                            setOpenDate(false)
+                                            setDates(selectedDate)
+                                            setRegisterData(
+                                                {
+                                                    ...registerData,
+                                                    birthDay: `${selectedDate.daysInMonth()}/${selectedDate.month()}/${selectedDate.year()}`
+                                                }
+                                            )
+                                        }}
+                                    />
+                                </View>
+                            </TouchableWithoutFeedback>
+                        </View>
+                    </TouchableWithoutFeedback>
+                </Modal>
             </SafeAreaView>
         </>
     );
@@ -218,6 +314,12 @@ const styles = StyleSheet.create({
         marginLeft: 10,
         fontSize: 16,
     },
+    imagePreview: {
+        width: 100,
+        height: 100,
+        marginTop: 10,
+        borderRadius: 50, // Make the image circular if you want an avatar-style display
+    }, 
     imagePickerButton: {
         backgroundColor: '#E0E0E0',
         padding: 10,
@@ -247,5 +349,15 @@ const styles = StyleSheet.create({
     loginLinkText: {
         color: '#4CAF50',
         fontSize: 16,
+    },
+    modalOverlay: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0)',
+    },
+    modalContent: {
+        width: '100%', // Full width minus some padding
+        height: "75%",
     },
 });
