@@ -19,7 +19,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onClose, isModal }) =>
 
     async function handleSignIn() {
         if (email.length < 1 || password.length < 8) {
-            addAlert("Please type name and password")
+            addAlert("Xin vui lòng nhập đầy đủ thông tin")
         } else {
             setLoading(true)
             try {

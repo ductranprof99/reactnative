@@ -12,6 +12,8 @@ import { getBatchFood, getCategory, getRecommendFood } from '@/services/api';
 const { width } = Dimensions.get('window');
 import { RecommendedPaging } from '@/components/home/RecommendPaging';
 import { useSnackBars } from '@/components/utils/snack';
+import { onAuthStateChanged, User } from 'firebase/auth';
+import { FIREBASE_AUTH } from '@/services/firebase';
 interface HomeScreenData {
 	categories: CategoryModel[];
 	recommends: FoodModel[];
@@ -44,10 +46,15 @@ const HomeScreen: React.FC = () => {
 	const [homeCategory, setHomeCategory] = useState<CategoryModel[]>([]);
 	const [homeRecommendFood, setHomeRecommendFood] = useState<FoodModel[]>([]);
 	const [homeFoods, setHomeFood] = useState<FoodModel[]>([]);
+	const [user, setUser] = useState<User | null>(null)
+
 	const viewabilityConfig = useRef({ itemVisiblePercentThreshold: 1 });
 	const { addAlert } = useSnackBars();
 
 	useEffect(() => {
+		onAuthStateChanged(FIREBASE_AUTH, (user) => {
+			setUser(user)
+		})
 		fetchAllData()
 			.then(data => {
 				setHomeCategory(data.categories)
@@ -83,8 +90,11 @@ const HomeScreen: React.FC = () => {
 	};
 
 	const handleCartPress = () => {
-		console.log('Cart pressed');
-		// Navigate to cart or open cart modal
+		if (user !== null) {
+			router.push('/layout/cartscreen')
+		} else {
+			router.push('/(tabs)/account')
+		}
 	};
 
 	const handleMenuPress = () => {
