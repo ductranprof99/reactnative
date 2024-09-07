@@ -14,7 +14,6 @@ export default function OrderScreen() {
         onAuthStateChanged(FIREBASE_AUTH, (user) => {
             setUser(user)
         })
-		console.log("a")
     }, [user]);
 	
 

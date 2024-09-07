@@ -1,33 +1,56 @@
 import { ThemedText } from '@/components/utils/ThemedText';
 import { FIREBASE_AUTH } from '@/services/firebase';
 import { router } from 'expo-router';
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet, ScrollView } from 'react-native';
+import React, { useMemo, useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet, ScrollView, Pressable, Modal, TouchableWithoutFeedback } from 'react-native';
+import { checkUserUpdateUserInfoValid, UserInfo } from '@/services/auth';
+import { RadioButtonProps, RadioGroup } from 'react-native-radio-buttons-group';
+import { useSnackBars } from '@/components/utils/snack';
+import DateTimePicker, { DateType } from 'react-native-ui-datepicker';
+import dayjs from 'dayjs'
 
-interface UserProfile {
-    name: string;
-    dateOfBirth: string;
-    gender: 'male' | 'female' | 'other';
-    phoneNumber: string;
-    address: string;
-    email: string;
-    password: string;
+interface UserProfileScreenProps {
+    profile: UserInfo;
+    updateProfile: (updatedInfo: UserInfo) => void;
 }
 
-export const UserProfileScreen: React.FC = () => {
-    const [profile, setProfile] = useState<UserProfile>({
-        name: 'Nguyễn Yến Uyển',
-        dateOfBirth: '2000/02/22',
-        gender: 'female',
-        phoneNumber: '0987654321',
-        address: '343 pham Ngũ Lão',
-        email: 'food@gmail.com',
-        password: '',
+export const UserProfileScreen: React.FC<UserProfileScreenProps> = ({ profile, updateProfile }) => {
+    const [updatedProfile, setProfile] = useState<UserInfo>(profile);
+    const [selectedId, setSelectedId] = useState<string>(() =>{
+        return profile.gender === "Nam" ? "1" : profile.gender === "Nữ" ? "2" : "3";
     });
+    const [openDate, setOpenDate] = useState(false)
+    const { addAlert } = useSnackBars();
+    const [dates, setDates] = useState<DateType | undefined>();
+
+    const radioButtons: RadioButtonProps[] = useMemo(() => ([
+        {
+            id: '1', // acts as primary key, should be unique and non-empty string
+            label: 'Nam',
+            value: 'Nam',
+            color: '#4CAF50'
+        },
+        {
+            id: '2',
+            label: 'Nữ',
+            value: 'Nữ',
+            color: '#4CAF50'
+        },
+        {
+            id: '3',
+            label: 'Khác',
+            value: 'Khác',
+            color: '#4CAF50'
+        }
+    ]), []);
 
     const handleUpdate = () => {
         // Implement update logic here
-        console.log('Profile updated:', profile);
+        if (checkUserUpdateUserInfoValid(updatedProfile)) {
+            addAlert("Xin vui lòng nhập mật khẩu hơn 8 ký tự")
+        } else {
+            updateProfile(updatedProfile);
+        }
     };
 
     async function handleSignOut() {
@@ -54,56 +77,55 @@ export const UserProfileScreen: React.FC = () => {
                         <Text style={styles.label}>Họ và tên (bắt buộc)</Text>
                         <TextInput
                             style={styles.input}
-                            value={profile.name}
+                            value={updatedProfile.name}
                             onChangeText={(text) => setProfile({ ...profile, name: text })}
                         />
                     </View>
 
                     <View style={styles.inputGroup}>
                         <Text style={styles.label}>Ngày sinh</Text>
-                        <View style={styles.dateInput}>
+                        {/* <View style={styles.dateInput}> */}
+                        <View style={styles.input}>
                             <TextInput
-                                style={styles.input}
-                                value={profile.dateOfBirth}
-                                onChangeText={(text) => setProfile({ ...profile, dateOfBirth: text })}
+                                style={styles.dateInput}
+                                value={updatedProfile.birthday}
+                                onChangeText={(text) => setProfile({ ...profile, birthday: text })}
                             />
-                            <Image
-                                style={styles.calendarIcon}
-                                source={require("@/assets/images/calendar.png")}
-                            />
+                            <Pressable onPress={() => setOpenDate(true)}>
+                                <Image
+                                    style={styles.calendarIcon}
+                                    
+                                    source={require("@/assets/images/calendar.png")}
+                                />
+                            </Pressable>
+                            
                         </View>
                     </View>
 
                     <View style={styles.inputGroup}>
                         <Text style={styles.label}>Giới tính</Text>
-                        <View style={styles.genderOptions}>
-                            <TouchableOpacity
-                                style={[styles.genderOption, profile.gender === 'male' && styles.genderOptionSelected]}
-                                onPress={() => setProfile({ ...profile, gender: 'male' })}
-                            >
-                                <Text>Nam</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                style={[styles.genderOption, profile.gender === 'female' && styles.genderOptionSelected]}
-                                onPress={() => setProfile({ ...profile, gender: 'female' })}
-                            >
-                                <Text>Nữ</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                style={[styles.genderOption, profile.gender === 'other' && styles.genderOptionSelected]}
-                                onPress={() => setProfile({ ...profile, gender: 'other' })}
-                            >
-                                <Text>Khác</Text>
-                            </TouchableOpacity>
-                        </View>
+                        <RadioGroup
+                            radioButtons={radioButtons}
+                            onPress={(value) => {
+                                radioButtons.forEach(element => {
+                                    if (element.id == value && element.value !== undefined) {
+                                        setProfile({ ...updatedProfile, gender: element.value })
+                                    }
+                                });
+                                setSelectedId(value)
+
+                            }}
+                            selectedId={selectedId}
+                            layout='row'
+                        />
                     </View>
 
                     <View style={styles.inputGroup}>
                         <Text style={styles.label}>Số điện thoại (bắt buộc)</Text>
                         <TextInput
                             style={styles.input}
-                            value={profile.phoneNumber}
-                            onChangeText={(text) => setProfile({ ...profile, phoneNumber: text })}
+                            value={updatedProfile.phone}
+                            onChangeText={(text) => setProfile({ ...profile, phone: text })}
                             keyboardType="phone-pad"
                         />
                     </View>
@@ -112,7 +134,7 @@ export const UserProfileScreen: React.FC = () => {
                         <Text style={styles.label}>Địa chỉ (bắt buộc)</Text>
                         <TextInput
                             style={styles.input}
-                            value={profile.address}
+                            value={updatedProfile.address}
                             onChangeText={(text) => setProfile({ ...profile, address: text })}
                         />
                     </View>
@@ -121,8 +143,8 @@ export const UserProfileScreen: React.FC = () => {
                         <Text style={styles.label}>Email (bắt buộc)</Text>
                         <TextInput
                             style={styles.input}
-                            value={profile.email}
-                            onChangeText={(text) => setProfile({ ...profile, email: text })}
+                            value={updatedProfile.email}
+                            readOnly
                             keyboardType="email-address"
                         />
                     </View>
@@ -131,7 +153,7 @@ export const UserProfileScreen: React.FC = () => {
                         <Text style={styles.label}>Mật khẩu</Text>
                         <TextInput
                             style={styles.input}
-                            value={profile.password}
+                            value={updatedProfile.password}
                             onChangeText={(text) => setProfile({ ...profile, password: text })}
                             secureTextEntry
                         />
@@ -145,6 +167,31 @@ export const UserProfileScreen: React.FC = () => {
                     </TouchableOpacity>
                 </View>
             </ScrollView>
+            <Modal
+                    visible={openDate}
+                    transparent={true}
+                    animationType="fade"
+                    onRequestClose={() => setOpenDate(false)}
+                >
+                    <TouchableWithoutFeedback onPress={() => setOpenDate(false)}>
+                        <View style={styles.modalOverlay}>
+                            <TouchableWithoutFeedback>
+                                <View style={styles.modalContent}>
+                                    <DateTimePicker
+                                        mode="single"
+                                        date={dates}
+                                        onChange={(params) => {
+                                            const selectedDate = dayjs(params.date);
+                                            setOpenDate(false)
+                                            setDates(selectedDate)
+                                            setProfile({ ...profile, birthday: `${selectedDate.daysInMonth()}/${selectedDate.month()}/${selectedDate.year()}` }) 
+                                        }}
+                                    />
+                                </View>
+                            </TouchableWithoutFeedback>
+                        </View>
+                    </TouchableWithoutFeedback>
+                </Modal>
         </View>
     );
 };
@@ -195,16 +242,20 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
         paddingVertical: 8,
         fontSize: 16,
+        height: 40
     },
     dateInput: {
         flexDirection: 'row',
         alignItems: 'center',
+        height: 24,
+        fontSize: 16,
     },
     calendarIcon: {
         position: 'absolute',
         right: 10,
         width: 20,
-        height: 20
+        height: 20,
+        marginVertical: 8,
     },
     genderOptions: {
         flexDirection: 'row',
@@ -241,6 +292,20 @@ const styles = StyleSheet.create({
     signOutLinkText: {
         color: '#4CAF50',
         fontSize: 16,
+    },
+    modalOverlay: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0)',
+    },
+    modalContent: {
+        width: '90%', // Full width minus some padding
+        height: "40%",
+        backgroundColor: "white",
+        borderWidth: 1,
+        borderColor: '#ccc',
+        borderRadius: 5,
     },
 });
 

@@ -9,16 +9,9 @@ import RadioGroup, { RadioButtonProps } from 'react-native-radio-buttons-group';
 import DateTimePicker, { DateType } from 'react-native-ui-datepicker'
 import dayjs from 'dayjs'
 import * as ImagePicker from 'react-native-image-picker';
+import { useSnackBars } from '@/components/utils/snack';
+import { RegisterData, signUp } from '@/services/auth';
 
-interface RegisterData {
-    name: string;
-    birthDay: string;
-    gender: string;
-    phone: string;
-    address: string;
-    email: string;
-    password: string;
-}
 
 export default function RegisterScreen() {
     const backIcon = Platform.OS === "ios" ? "chevron-back" : "arrow-back-sharp";
@@ -26,10 +19,10 @@ export default function RegisterScreen() {
     const [openDate, setOpenDate] = useState(false)
     const [dates, setDates] = useState<DateType | undefined>();
     const [imageUri, setImageUri] = useState<string | null>(null);
-
+    const { addAlert } = useSnackBars();
     const [registerData, setRegisterData] = useState<RegisterData>({
         name: '',
-        birthDay: '',
+        birthday: '',
         gender: '',
         phone: '',
         address: '',
@@ -71,7 +64,15 @@ export default function RegisterScreen() {
     };
 
     async function createNewAccount() {
-        // TODO
+        await signUp(registerData, () => {
+            addAlert("Đăng ký thành công!!!");
+            const timer = setTimeout(() => {
+                router.back()
+            }, 3000);
+            return () => clearTimeout(timer);
+        }, () => {
+            addAlert("Đăng ký thất bại!");
+        })
     }
 
     function navigateToPreviousScreen() {
@@ -122,10 +123,9 @@ export default function RegisterScreen() {
                                 style={styles.input}
                                 placeholder="01/01/2000"
                                 placeholderTextColor="#999"
-                                // onEndEditing={(event) => { event.nativeEvent.text }}
                                 readOnly
                                 onPress={() => setOpenDate(true)}
-                                value={registerData.birthDay}
+                                value={registerData.birthday}
                             />
                         </View>
 
@@ -157,6 +157,7 @@ export default function RegisterScreen() {
                                 style={styles.input}
                                 placeholder="0987654321"
                                 placeholderTextColor="#999"
+                                keyboardType="phone-pad"
                                 onEndEditing={(event) => { setRegisterData({ ...registerData, phone: event.nativeEvent.text }) }}
                             />
                         </View>
@@ -167,7 +168,7 @@ export default function RegisterScreen() {
                                 style={styles.input}
                                 placeholder="Quận 1, TP Hồ Chí Minh"
                                 placeholderTextColor="#999"
-                                onEndEditing={(event) => { setRegisterData({ ...registerData, phone: event.nativeEvent.text }) }}
+                                onEndEditing={(event) => { setRegisterData({ ...registerData, address: event.nativeEvent.text }) }}
                             />
                         </View>
 
@@ -187,6 +188,7 @@ export default function RegisterScreen() {
                                 style={styles.input}
                                 placeholder="Nhập thông tin"
                                 placeholderTextColor="#999"
+                                keyboardType="email-address"
                                 onEndEditing={(event) => { setRegisterData({ ...registerData, email: event.nativeEvent.text }) }}
                             />
                         </View>
@@ -198,7 +200,7 @@ export default function RegisterScreen() {
                                 placeholder="Nhập thông tin"
                                 placeholderTextColor="#999"
                                 secureTextEntry
-                                onEndEditing={(event) => { setRegisterData({ ...registerData, password: event.nativeEvent.text }) }}
+                                onChangeText={(text) => { setRegisterData({ ...registerData, password: text }) }}
                             />
                         </View>
 
@@ -212,8 +214,8 @@ export default function RegisterScreen() {
                 </ScrollView>
                 <Modal
                     visible={openDate}
-                    transparent={false}
-                    animationType="slide"
+                    transparent={true}
+                    animationType="fade"
                     onRequestClose={() => setOpenDate(false)}
                 >
                     <TouchableWithoutFeedback onPress={() => setOpenDate(false)}>
@@ -230,7 +232,7 @@ export default function RegisterScreen() {
                                             setRegisterData(
                                                 {
                                                     ...registerData,
-                                                    birthDay: `${selectedDate.daysInMonth()}/${selectedDate.month()}/${selectedDate.year()}`
+                                                    birthday: `${selectedDate.daysInMonth()}/${selectedDate.month()}/${selectedDate.year()}`
                                                 }
                                             )
                                         }}
@@ -319,7 +321,7 @@ const styles = StyleSheet.create({
         height: 100,
         marginTop: 10,
         borderRadius: 50, // Make the image circular if you want an avatar-style display
-    }, 
+    },
     imagePickerButton: {
         backgroundColor: '#E0E0E0',
         padding: 10,
@@ -357,7 +359,11 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(0, 0, 0, 0)',
     },
     modalContent: {
-        width: '100%', // Full width minus some padding
-        height: "75%",
+        width: '90%', // Full width minus some padding
+        height: "40%",
+        backgroundColor: "white",
+        borderWidth: 1,
+        borderColor: '#ccc',
+        borderRadius: 5,
     },
 });
