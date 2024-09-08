@@ -118,6 +118,7 @@ export const CartScreen: React.FC = () => {
                     headerTitleStyle: {
                         fontWeight: 'bold',
                     },
+                    headerBackVisible: false,
                     headerLeft: () => {
                         return <Ionicons
                             name={Platform.OS === "ios" ? "chevron-back" : "arrow-back-sharp"}
@@ -188,6 +189,8 @@ const styles = StyleSheet.create({
         fontSize: 24,
         fontWeight: 'bold',
         color: '#4CAF50',
+        flexDirection: 'row',
+        alignItems: 'center',
     },
     summary: {
         marginTop: 16,
@@ -244,6 +247,10 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold',
     },
+    backIconStyle: {flex:0, 
+        flexDirection: 'row', 
+        justifyContent: 'flex-start'
+    }
 });
 
 export default CartScreen;

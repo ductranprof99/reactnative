@@ -86,20 +86,18 @@ export const UserProfileScreen: React.FC<UserProfileScreenProps> = ({ profile, u
 
                     <View style={styles.inputGroup}>
                         <Text style={styles.label}>Ngày sinh</Text>
-                        {/* <View style={styles.dateInput}> */}
-                        <View style={styles.input}>
+                        <View style={styles.dateWrapperInput}>
                             <TextInput
                                 style={styles.dateInput}
                                 value={updatedProfile.birthday}
                                 readOnly
                             />
-                            <Pressable onPress={() => setOpenDate(true)}>
+                            <Pressable style={styles.calendarIconWrapper} onPress={() => setOpenDate(true)}>
                                 <Image
                                     style={styles.calendarIcon}
                                     source={require("@/assets/images/calendar.png")}
                                 />
                             </Pressable>
-                            
                         </View>
                     </View>
 
@@ -245,18 +243,36 @@ const styles = StyleSheet.create({
         fontSize: 16,
         height: 40
     },
+    dateWrapperInput: {
+        borderWidth: 1,
+        borderColor: '#ccc',
+        borderRadius: 5,
+        paddingHorizontal: 10,
+        paddingVertical: 8,
+        fontSize: 16,
+        height: 40
+    },
     dateInput: {
-        flexDirection: 'row',
+        // flexDirection: 'row',
         alignItems: 'center',
         height: 24,
         fontSize: 16,
     },
-    calendarIcon: {
+    calendarIconWrapper: {
         position: 'absolute',
         right: 10,
         width: 20,
-        height: 20,
-        marginTop: 0
+        height: 40,
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginVertical: 0,
+    },
+    calendarIcon: {
+        position: 'relative',
+        width: 20,
+        height: 20
     },
     genderOptions: {
         flexDirection: 'row',
