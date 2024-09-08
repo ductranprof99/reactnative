@@ -10,18 +10,21 @@ import { OrderModel } from '@/models/OrderModel';
 import HistoryOrderItem from '@/components/history/HistoryOrderItem';
 import { NoHistoryView } from '@/components/history/NoHistoryView';
 import { getHistoryOrder } from '@/services/api';
+import LottieView from 'lottie-react-native';
 
 export default function HistoryScreen() {
 	const [user, setUser] = useState<User | null>(null)
 	const [isLoginModalVisible, setLoginModalVisible] = useState(false);
 	const [listHistoryOrder, setListHistoryOrder] = useState<OrderModel[]>([])
+	const [isLoadAPI, setIsLoadAPI] = useState(true);
 	useEffect(() => {
 		onAuthStateChanged(FIREBASE_AUTH, (user) => {
-			setUser(user)
+			setUser(user);
 		})
 		const getHistory = async () => {
-			const listHistory = await getHistoryOrder()
-			setListHistoryOrder(listHistory)
+			const listHistory = await getHistoryOrder();
+			setListHistoryOrder(listHistory);
+			setIsLoadAPI(false);
 		}
 		getHistory()
 	}, [user]);
@@ -66,26 +69,31 @@ export default function HistoryScreen() {
 						<RequireLoginScreen onLoginPress={handleLoginPress} />
 					</View>
 				) : (
-					(listHistoryOrder.length === 0) ? 
-					<NoHistoryView/>
-					:
-					<View>
-						<View style={styles.scrollVerticalSection}>
-							<Text style={styles.sectionTitle}>Món ăn thường ngày</Text>
-							<FlatList
-								data={listHistoryOrder}
-								renderItem={({ item }) =>
-									<HistoryOrderItem
-										order={item}
-										onViewInvoice={onViewShippingOrder}
-										onViewOrder={onViewHistoryOrder}
-									/>
-								}
-								keyExtractor={(item) => item.id}
-								scrollEnabled={false}
-							/>
+					isLoadAPI ?
+						<View style={styles.lottieContainer} >
+							<LottieView style={styles.lottieView} source={require('@/assets/lottie/history-order-loading.json')} autoPlay loop />
 						</View>
-					</View>
+						:
+						(listHistoryOrder.length === 0) ?
+							<NoHistoryView />
+							:
+							<View>
+								<View style={styles.scrollVerticalSection}>
+									<Text style={styles.sectionTitle}>Món ăn thường ngày</Text>
+									<FlatList
+										data={listHistoryOrder}
+										renderItem={({ item }) =>
+											<HistoryOrderItem
+												order={item}
+												onViewInvoice={onViewShippingOrder}
+												onViewOrder={onViewHistoryOrder}
+											/>
+										}
+										keyExtractor={(item) => item.id}
+										scrollEnabled={false}
+									/>
+								</View>
+							</View>
 				)}
 			</MainViewFrame>
 
@@ -113,6 +121,24 @@ export default function HistoryScreen() {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
+	},
+	lottieContainer: {
+		flex: 1,
+		padding: 0,
+		margin: 0,
+		justifyContent: 'center',
+		alignItems: 'center',
+		backgroundColor: "#ffffff00",
+		height: 300,
+		width: '100%'
+	},
+	lottieView: {
+		flex: 1,
+		justifyContent: 'center',
+		alignItems: 'center',
+		backgroundColor: '#fff',
+		height: 300,
+		width: '100%'
 	},
 	modalOverlay: {
 		flex: 1,

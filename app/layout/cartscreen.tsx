@@ -11,6 +11,7 @@ import { NoItemInCart } from "@/components/utils/NoItemInCart";
 import { CartItem } from "@/components/items/CartItem";
 import { useSnackBars } from "@/components/utils/snack";
 import { getUserInfo } from "@/services/auth";
+import LottieView from 'lottie-react-native';
 
 function randomIntFromInterval(min: number = 30, max: number = 70) { // min and max included 
     return Math.floor(Math.random() * (max - min + 1) + min) * 1000;
@@ -132,7 +133,9 @@ export const CartScreen: React.FC = () => {
             />
             <ScrollView style={styles.container}>
                 {isLoadAPI? 
-                <ActivityIndicator size="large" color="#111" />
+                <View style={styles.lottieContainer} >
+                    <LottieView style={styles.lottieView} source={require('@/assets/lottie/cart-loading.json')} autoPlay loop />
+                </View>
                 :cartItems.length === 0 ?
                     <NoItemInCart />
                     : <FlatList
@@ -184,6 +187,24 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 16,
         backgroundColor: 'white',
+    },
+    lottieContainer: {
+        flex: 1,
+        padding: 0,
+        margin: 0,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: "#ffffff00",
+        height: 300,
+        width: '100%'
+    },
+    lottieView: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#fff',
+        height: 300,
+        width: '100%'
     },
     header: {
         fontSize: 24,
