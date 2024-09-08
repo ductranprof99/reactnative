@@ -159,12 +159,39 @@ export const getCart = async (email: string): Promise<OrderModel | null> => {
     return result;
 }
 
-export const getOrder = async (email: string): Promise<OrderModel[]> => {
+export const getHistoryOrder = async (email: string): Promise<OrderModel[]> => {
     const db = FIRESTORE_DB;
     const ref = collection(db, "orders");
     const q = query(ref, 
         where("user_email", "==", email),
         where("status", "!=", "Đang chuẩn bị"),
+        where("status", "!=", "Đang vận chuyển"),
+    );
+    const snapshot = await getDocs(q);
+    var result: OrderModel[] = [];
+
+    snapshot.forEach((doc) => {
+        const data = doc.data();
+        result.push({
+            order_date: data.order_date,
+            id: doc.id,
+            user_email: data.user_email,
+            total: data.total,
+            product_quantities: data.product_quantities,
+            product_ids: data.product_ids,
+            status: data.status,
+            ship_address: data.ship_address,
+        });
+    });
+    return result;
+}
+
+export const getShippingOrder = async (email: string): Promise<OrderModel[]> => {
+    const db = FIRESTORE_DB;
+    const ref = collection(db, "orders");
+    const q = query(ref, 
+        where("user_email", "==", email),
+        where("status", "==", "Đang chuẩn bị")
     );
     const snapshot = await getDocs(q);
     var result: OrderModel[] = [];

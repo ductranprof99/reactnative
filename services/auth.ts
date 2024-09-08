@@ -114,9 +114,6 @@ export const checkUserUpdateUserInfoValid = (userInfo: UserInfo): boolean => {
     if (userInfo.address.length === 0) {
         return false;
     }
-    if (userInfo.password.length !== 0 && userInfo.password.length < 8) {
-        return false;
-    }
     return true;
 }
 

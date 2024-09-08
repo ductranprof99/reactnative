@@ -46,8 +46,10 @@ export const UserProfileScreen: React.FC<UserProfileScreenProps> = ({ profile, u
 
     const handleUpdate = () => {
         // Implement update logic here
-        if (checkUserUpdateUserInfoValid(updatedProfile)) {
-            addAlert("Xin vui lòng nhập mật khẩu hơn 8 ký tự")
+        if (!checkUserUpdateUserInfoValid(updatedProfile)) {
+            addAlert("Xin vui lòng nhập đầy đủ thông tin!!!");
+        } else if (updatedProfile.password.length < 8 && updatedProfile.password.length !== 0)  {
+            addAlert("Xin vui lòng nhập mật khẩu hơn 8 ký tự!!!");
         } else {
             updateProfile(updatedProfile);
         }
@@ -64,7 +66,7 @@ export const UserProfileScreen: React.FC<UserProfileScreenProps> = ({ profile, u
                 <Text style={styles.title}>Tài khoản</Text>
                 <View style={styles.profileImageContainer}>
                     <Image
-                        source={{ uri: 'https://example.com/placeholder-image.jpg' }}
+                        source={require('@/assets/images/placeholder-avatar.png')}
                         style={styles.profileImage}
                     />
                     <TouchableOpacity style={styles.changePhotoButton}>
@@ -89,12 +91,11 @@ export const UserProfileScreen: React.FC<UserProfileScreenProps> = ({ profile, u
                             <TextInput
                                 style={styles.dateInput}
                                 value={updatedProfile.birthday}
-                                onChangeText={(text) => setProfile({ ...profile, birthday: text })}
+                                readOnly
                             />
                             <Pressable onPress={() => setOpenDate(true)}>
                                 <Image
                                     style={styles.calendarIcon}
-                                    
                                     source={require("@/assets/images/calendar.png")}
                                 />
                             </Pressable>
@@ -125,7 +126,7 @@ export const UserProfileScreen: React.FC<UserProfileScreenProps> = ({ profile, u
                         <TextInput
                             style={styles.input}
                             value={updatedProfile.phone}
-                            onChangeText={(text) => setProfile({ ...profile, phone: text })}
+                            onEndEditing={(event) => setProfile({ ...profile, phone: event.nativeEvent.text })}
                             keyboardType="phone-pad"
                         />
                     </View>
@@ -135,7 +136,7 @@ export const UserProfileScreen: React.FC<UserProfileScreenProps> = ({ profile, u
                         <TextInput
                             style={styles.input}
                             value={updatedProfile.address}
-                            onChangeText={(text) => setProfile({ ...profile, address: text })}
+                            onEndEditing={(event) => setProfile({ ...profile, address: event.nativeEvent.text })}
                         />
                     </View>
 
@@ -255,7 +256,7 @@ const styles = StyleSheet.create({
         right: 10,
         width: 20,
         height: 20,
-        marginVertical: 8,
+        marginTop: 0
     },
     genderOptions: {
         flexDirection: 'row',

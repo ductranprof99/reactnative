@@ -48,7 +48,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onClose, isModal }) =>
                     : <></>
             }
             <Image
-                source={require('../../assets/images/logo.png')}
+                source={require('@/assets/images/logo.png')}
                 style={styles.logo}
             />
             <Text style={styles.title}>Đăng nhập</Text>
