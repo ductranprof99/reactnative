@@ -1,15 +1,16 @@
 import { FoodModel } from "@/models/FoodModel";
 import { useEffect, useState } from "react";
-import { FlatList, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, FlatList, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { OrderModel } from "@/models/OrderModel";
-import { getCart, getFoodByListId } from "@/services/api";
+import { getCart, getFoodByListId, updateCurrentCart } from "@/services/api";
 import { router, Stack } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { FIREBASE_AUTH } from "@/services/firebase";
 import { CartItemModel } from "@/models/CartItemModel";
 import { NoItemInCart } from "@/components/utils/NoItemInCart";
 import { CartItem } from "@/components/items/CartItem";
-
+import { useSnackBars } from "@/components/utils/snack";
+import { getUserInfo } from "@/services/auth";
 
 function randomIntFromInterval(min: number = 30, max: number = 70) { // min and max included 
     return Math.floor(Math.random() * (max - min + 1) + min) * 1000;
@@ -17,9 +18,13 @@ function randomIntFromInterval(min: number = 30, max: number = 70) { // min and 
 
 export const CartScreen: React.FC = () => {
     const [cartItems, setCartItems] = useState<CartItemModel[]>([]);
+    const [isLoadAPI, setIsLoadAPI] = useState(true)
     const [userEmail, setUserEmail] = useState('');
+    const [userPhone, setUserPhone] = useState('');
     const [shipAddress, setShipAddress] = useState('');
     const [shipDistancePrice, setShipDistancePrice] = useState(0);
+    const [allowEdit, setAllowEdit] = useState(true)
+    const { addAlert } = useSnackBars();
 
     // Mock function to fetch cart items, replace with actual API call
     useEffect(() => {
@@ -27,7 +32,9 @@ export const CartScreen: React.FC = () => {
         if (user !== null) {
             const email = user.email === null ? "" : user.email
             const fetchCartItems = async () => {
-                const cartData = await getCart(email)
+                const userInfo = await getUserInfo(email);
+                setUserPhone(userInfo.phone);
+                const cartData = await getCart(email);
                 if (cartData !== null) {
                     setShipAddress(cartData.ship_address);
                     if (cartData.product_ids.length !== 0) {
@@ -43,42 +50,63 @@ export const CartScreen: React.FC = () => {
                                 category: item.category,
                                 quantity: cartData.product_quantities[cartData.product_ids.indexOf(item.id)]
                             }
-                        })
-                        setCartItems(listCartItem)
-                        setShipDistancePrice(randomIntFromInterval())
+                        });
+                        setCartItems(listCartItem);
+                        setShipDistancePrice(randomIntFromInterval());
                     } else {
-                        setShipDistancePrice(0)
+                        setShipDistancePrice(0);
                     }
                 }
+                setIsLoadAPI(false)
             };
-            setUserEmail(email)
+            setUserEmail(email);
             fetchCartItems();
         }
 
 
     }, []);
 
-    const updateQuantity = (id: string, newQuantity: number) => {
-        setCartItems(cartItems.map(item =>
-            item.id === id ? { ...item, quantity: Math.max(0, newQuantity) } : item
-        ));
+    const updateQuantity = async (id: string, newQuantity: number, price: number) => {
+        if (allowEdit) {
+            setAllowEdit(false);
+            const req = await updateCurrentCart(id, Math.max(0, newQuantity), price, userEmail, shipAddress === '' ? undefined : shipAddress);
+            
+            if (req) {
+                // Remove the item if newQuantity is 0, otherwise update the quantity
+                setCartItems(cartItems => 
+                    newQuantity === 0 
+                    ? cartItems.filter(item => item.id !== id) // Remove item
+                    : cartItems.map(item => 
+                        item.id === id ? { ...item, quantity: Math.max(0, newQuantity) } : item
+                    )
+                );
+                addAlert("Cập nhật số lượng món ăn thành công!!!");
+                setAllowEdit(true);
+            } else {
+                addAlert("Cập nhật số lượng món ăn thất bại!!!");
+                setAllowEdit(true);
+            }
+        }
     };
 
     const totalPrice = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0) + shipDistancePrice;
 
-    const handlePlaceOrder = () => {
-        const order: Omit<OrderModel, 'id'> = {
-            order_date: new Date().toISOString(),
-            product_ids: cartItems.map(item => item.id),
-            product_quantities: cartItems.map(item => item.quantity),
-            user_email: userEmail,
-            total: totalPrice,
-            ship_address: shipAddress,
-            status: "Đang giao hàng"
-        };
+    const handlePlaceOrder = async () => {
+        if (allowEdit) {
+            setAllowEdit(false)
+            const order: Omit<OrderModel, 'id' | 'status'> = {
+                order_date: new Date().toISOString(),
+                product_ids: cartItems.map(item => item.id),
+                product_quantities: cartItems.map(item => item.quantity),
+                user_email: userEmail,
+                total: totalPrice,
+                ship_address: shipAddress
+            };
 
-        console.log('Placing order:', order);
-        // Here you would typically send this order to your backend
+            console.log('Placing order:', order);
+            // Here you would typically send this order to your backend
+            setAllowEdit(true)
+        }
     };
 
     return (
@@ -102,11 +130,13 @@ export const CartScreen: React.FC = () => {
                 }}
             />
             <ScrollView style={styles.container}>
-                {cartItems.length === 0 ?
+                {isLoadAPI? 
+                <ActivityIndicator size="large" color="#111" />
+                :cartItems.length === 0 ?
                     <NoItemInCart />
                     : <FlatList
                         data={cartItems}
-                        renderItem={({ item }) => <CartItem item={item} updateQuantity={updateQuantity} />}
+                        renderItem={({ item }) => <CartItem item={item} updateQuantity={updateQuantity} deleteItem={() => updateQuantity(item.id, 0, item.price)} />}
                         keyExtractor={(item) => item.id}
                         scrollEnabled={false}
                     />
@@ -119,21 +149,28 @@ export const CartScreen: React.FC = () => {
                     <Text style={styles.formLabel}>Thông tin người nhận hàng</Text>
                     <TextInput
                         style={styles.input}
-                        placeholder="Email (bắt buộc)"
                         value={userEmail}
-                        onChangeText={setUserEmail}
-                        keyboardType="email-address"
+                        readOnly
+                    />
+                    <TextInput
+                        style={styles.input}
+                        value={userPhone}
+                        readOnly
                     />
                     <TextInput
                         style={styles.input}
                         placeholder="Địa chỉ giao hàng (bắt buộc)"
                         value={shipAddress}
+                        editable={allowEdit}
                         onChangeText={setShipAddress}
                     />
                 </View>
                 {(cartItems.length !== 0) &&
                     <TouchableOpacity style={styles.orderButton} onPress={handlePlaceOrder}>
-                        <Text style={styles.orderButtonText}>Đặt hàng</Text>
+                        { allowEdit ?
+                            <Text style={styles.orderButtonText}>Đặt hàng</Text>
+                            : <ActivityIndicator size="small" color="#111" />
+                        }
                     </TouchableOpacity>
                 }
             </ScrollView>

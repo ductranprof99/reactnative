@@ -4,19 +4,20 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 interface CartItemProps {
     item: CartItemModel;
-    updateQuantity: (id: string, newQuantity: number) => void
+    updateQuantity: (id: string, newQuantity: number, price: number) => void;
+    deleteItem: () => void;
 }
-export const CartItem: React.FC<CartItemProps> = ({ item, updateQuantity }) => {
+export const CartItem: React.FC<CartItemProps> = ({ item, updateQuantity, deleteItem }) => {
     const [quantity, setQuantity] = useState<number>(item.quantity)
     return <View key={item.id} style={styles.cartItem}>
         <Image src={item.image} style={styles.itemImage} />
         <View style={styles.itemInfo}>
             <Text style={styles.itemName}>{item.name}</Text>
-            <Text style={styles.itemPrice}>{item.price}đ</Text>
+            <Text style={styles.itemPrice}>{item.price} đ</Text>
             <View style={styles.quantityControl}>
                 <TouchableOpacity onPress={() => {
                     const newQuant = item.quantity - 1
-                    updateQuantity(item.id, newQuant)
+                    updateQuantity(item.id, newQuant, item.price)
                     setQuantity(newQuant)
                 }}
                 >
@@ -25,7 +26,7 @@ export const CartItem: React.FC<CartItemProps> = ({ item, updateQuantity }) => {
                 <Text style={styles.quantity}>{quantity}</Text>
                 <TouchableOpacity onPress={() => {
                     const newQuant = item.quantity + 1
-                    updateQuantity(item.id, newQuant)
+                    updateQuantity(item.id, newQuant, item.price)
                     setQuantity(newQuant)
                 }
                 }>

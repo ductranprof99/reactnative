@@ -7,3 +7,7 @@ export interface FoodModel {
     image: any; 
     category: string;
 }
+
+export interface SelectedItem extends FoodModel {
+    quantity: number;
+}

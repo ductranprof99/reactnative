@@ -168,6 +168,7 @@ export default function RegisterScreen() {
                                 style={styles.input}
                                 placeholder="Quận 1, TP Hồ Chí Minh"
                                 placeholderTextColor="#999"
+                                // onChangeText={}
                                 onEndEditing={(event) => { setRegisterData({ ...registerData, address: event.nativeEvent.text }) }}
                             />
                         </View>

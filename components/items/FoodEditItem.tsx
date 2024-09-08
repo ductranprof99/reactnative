@@ -1,13 +1,14 @@
-import { FoodModel } from '@/models/FoodModel';
+import { FoodModel, SelectedItem } from '@/models/FoodModel';
 import React, { useState } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 
 interface FoodEditItemProps {
     item: FoodModel;
     onQuantityChange: (id: string, quantity: number) => void;
+    onRefreshChoose: SelectedItem[];
 }
 
-const FoodEditItem: React.FC<FoodEditItemProps> = ({ item, onQuantityChange }) => {
+const FoodEditItem: React.FC<FoodEditItemProps> = ({ item, onQuantityChange, onRefreshChoose }) => {
     const [quantity, setQuantity] = useState(0);
 
     const handleIncrement = () => {
@@ -29,14 +30,14 @@ const FoodEditItem: React.FC<FoodEditItemProps> = ({ item, onQuantityChange }) =
             <Image src={item.image} style={styles.foodImage} />
             <View style={styles.foodInfo}>
                 <Text style={styles.foodName}>{item.name}</Text>
-                <Text style={styles.foodPrice}>{item.price.toLocaleString()}đ</Text>
+                <Text style={styles.foodPrice}>{item.price.toLocaleString()} đ</Text>
                 <Text style={styles.foodDescription} numberOfLines={3}>{item.description}</Text>
             </View>
             <View style={styles.quantityControl}>
                 <TouchableOpacity onPress={handleDecrement} style={styles.quantityButton}>
                     <Text style={styles.quantityButtonText}>-</Text>
                 </TouchableOpacity>
-                <Text style={styles.quantityText}>{quantity}</Text>
+                <Text style={styles.quantityText}>{onRefreshChoose.length === 0 ? 0 : quantity}</Text>
                 <TouchableOpacity onPress={handleIncrement} style={styles.quantityButton}>
                     <Text style={styles.quantityButtonText}>+</Text>
                 </TouchableOpacity>

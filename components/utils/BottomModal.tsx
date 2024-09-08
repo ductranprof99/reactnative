@@ -1,23 +1,22 @@
-import { FoodModel } from "@/models/FoodModel";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { FoodModel, SelectedItem } from "@/models/FoodModel";
+import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
-export interface SelectedItem extends FoodModel {
-    quantity: number;
-}
-
-export const BottomDialog: React.FC<{ selectedItems: SelectedItem[], onPressOrder?: () => void, onClose?: () => void }> = ({ selectedItems, onPressOrder, onClose }) => {
+export const BottomDialog: React.FC<{ selectedItems: SelectedItem[], isLoading: boolean, onPressOrder?: () => void, onClose?: () => void }> = ({ selectedItems, isLoading, onPressOrder, onClose }) => {
     var total: number = selectedItems.reduce((accumulator, currentValue) => {
         return Number(currentValue.price) * currentValue.quantity + accumulator
     }, 0);
     return (
-    <View style={styles.bottomDialog}>
-        <Text style={styles.bottomDialogTitle}>Bạn đã đặt {selectedItems.length} món ăn</Text>
-        {}
-        <Text style={styles.bottomDialogTotal}>Tổng cộng: {total.toLocaleString()}đ</Text>
-        <TouchableOpacity style={styles.bottomDialogButton} onPress={onPressOrder}>
-            <Text style={styles.bottomDialogButtonText}>Đặt hàng</Text>
-        </TouchableOpacity>
-    </View>
+        <View style={styles.bottomDialog}>
+            <Text style={styles.bottomDialogTitle}>Bạn đã đặt {selectedItems.length} món ăn</Text>
+            { }
+            <Text style={styles.bottomDialogTotal}>Tổng cộng: {total.toLocaleString()}đ</Text>
+            <TouchableOpacity style={styles.bottomDialogButton} onPress={onPressOrder}>
+                {isLoading ?
+                    <ActivityIndicator size="small" color="#111" /> :
+                    <Text style={styles.bottomDialogButtonText}>Đặt hàng</Text>
+                }
+            </TouchableOpacity>
+        </View>
     );
 }
 

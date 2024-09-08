@@ -1,8 +1,9 @@
 import { CategoryModel } from "@/models/CategoryModel";
 import { FIRESTORE_DB } from "./firebase";
-import { collection, getDocs, limit, orderBy, query, startAt, where } from "firebase/firestore";
+import { addDoc, collection, deleteDoc, doc, getDocs, limit, orderBy, query, setDoc, startAt, updateDoc, where } from "firebase/firestore";
 import { FoodModel } from "@/models/FoodModel";
 import { OrderModel } from "@/models/OrderModel";
+import { getUserInfo } from "./auth";
 
 export const getCategory = async () => {
     const db = FIRESTORE_DB
@@ -155,7 +156,6 @@ export const getCart = async (email: string): Promise<OrderModel | null> => {
             ship_address: data.ship_address,
         };
     });
-
     return result;
 }
 
@@ -185,9 +185,153 @@ export const getOrder = async (email: string): Promise<OrderModel[]> => {
     return result;
 }
 
+export const updateCurrentCart = async (product_id: string, quantity: number, price: number, email: string, address?: string): Promise<boolean> => {
+    const current_cart = await getCart(email);
+    const db = FIRESTORE_DB;
+    let result = false;
 
-export const addToCart = async (product_id: string, quantity: number, email: string) => {
+    try {
+        if (current_cart === null) {
+            if (quantity <= 0) {
+                // Don't create a new cart for zero or negative quantity
+                return true;
+            }
+            const user = await getUserInfo(email);
+            const new_cart: Omit<OrderModel, 'id'> = {
+                order_date: new Date().toISOString(),
+                user_email: email,
+                total: price * quantity,
+                product_quantities: [quantity],
+                product_ids: [product_id],
+                status: "Đang chuẩn bị",
+                ship_address: address || user.address,
+            };
+            // Use addDoc to automatically generate an ID
+            await addDoc(collection(db, "orders"), new_cart);
+            result = true;
+        } else {
+            const product_id_index = current_cart.product_ids.indexOf(product_id);
+            if (product_id_index !== -1) {
+                // Product exists in cart
+                const old_quantity = current_cart.product_quantities[product_id_index];
+                const partial_total = old_quantity * price;
 
-}
+                if (quantity <= 0) {
+                    // Remove product from cart
+                    const new_product_ids = current_cart.product_ids.filter(id => id !== product_id);
+                    const new_quantities = current_cart.product_quantities.filter((_, index) => index !== product_id_index);
+
+                    const update_cart: Partial<OrderModel> = {
+                        product_ids: new_product_ids,
+                        product_quantities: new_quantities,
+                        total: current_cart.total - partial_total,
+                        ship_address: address || current_cart.ship_address
+                    };
+
+                    if (new_product_ids.length === 0) {
+                        // If cart is empty, delete it
+                        await deleteDoc(doc(db, "orders", current_cart.id));
+                    } else {
+                        await updateDoc(doc(db, "orders", current_cart.id), update_cart);
+                    }
+                } else {
+                    // Update quantity
+                    const new_quantities = [...current_cart.product_quantities];
+                    new_quantities[product_id_index] = quantity;
+                    
+                    const update_cart: Partial<OrderModel> = {
+                        product_quantities: new_quantities,
+                        total: current_cart.total + price * quantity - partial_total,
+                        ship_address: address || current_cart.ship_address
+                    };
+                    await updateDoc(doc(db, "orders", current_cart.id), update_cart);
+                }
+            } else if (quantity > 0) {
+                // Add new product to cart
+                const update_cart: Partial<OrderModel> = {
+                    product_ids: [...current_cart.product_ids, product_id],
+                    product_quantities: [...current_cart.product_quantities, quantity],
+                    total: current_cart.total + price * quantity,
+                    ship_address: address || current_cart.ship_address
+                };
+                await updateDoc(doc(db, "orders", current_cart.id), update_cart);
+            }
+            result = true;
+        }
+    } catch (error) {
+        console.error("Error updating cart:", error);
+        result = false;
+    }
+    return result;
+};
+
+export const updateMultipleProductInCart = async (
+    product_ids: string[], 
+    quantities: number[], 
+    prices: number[], 
+    email: string, 
+    address?: string
+): Promise<boolean> => {
+    if (product_ids.length !== quantities.length || product_ids.length !== prices.length) {
+        console.error("Mismatch in input array lengths");
+        return false;
+    }
+
+    const current_cart = await getCart(email);
+    const db = FIRESTORE_DB;
+    let result = false;
+
+    try {
+        if (current_cart === null) {
+            const user = await getUserInfo(email);
+            const new_cart: Omit<OrderModel, 'id'> = {
+                order_date: new Date().toISOString(),
+                user_email: email,
+                total: product_ids.reduce((sum, _, index) => sum + prices[index] * quantities[index], 0),
+                product_quantities: quantities,
+                product_ids: product_ids,
+                status: "Đang chuẩn bị",
+                ship_address: address || user.address,
+            };
+
+            // Use addDoc to automatically generate an ID
+            await addDoc(collection(db, "orders"), new_cart);
+            result = true;
+        } else {
+            let updated_product_ids = [...current_cart.product_ids];
+            let updated_quantities = [...current_cart.product_quantities];
+            let updated_total = current_cart.total;
+
+            for (let i = 0; i < product_ids.length; i++) {
+                const product_id_index = current_cart.product_ids.indexOf(product_ids[i]);
+                
+                if (product_id_index !== -1) {
+                    const old_quantity = updated_quantities[product_id_index];
+                    updated_quantities[product_id_index] = quantities[i];
+                    updated_total += (quantities[i] - old_quantity) * prices[i];
+                } else {
+                    updated_product_ids.push(product_ids[i]);
+                    updated_quantities.push(quantities[i]);
+                    updated_total += quantities[i] * prices[i];
+                }
+            }
+
+            const update_cart: Partial<OrderModel> = {
+                product_ids: updated_product_ids,
+                product_quantities: updated_quantities,
+                total: updated_total,
+                ship_address: address || current_cart.ship_address
+            };
+
+            await updateDoc(doc(db, "orders", current_cart.id), update_cart);
+            result = true;
+        }
+    } catch (error) {
+        console.error("Error updating cart:", error);
+        result = false;
+    }
+
+    return result;
+};
 
 // ===================== order ======================

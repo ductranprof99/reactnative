@@ -1,23 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Image, ScrollView, StyleSheet, ActivityIndicator } from 'react-native';
-import { Stack } from 'expo-router';
+import { router, Stack } from 'expo-router';
 import FoodEditItem from '@/components/items/FoodEditItem';
 import { MainViewFrame } from '@/components/navigation/MainViewFrame';
-import { FoodModel } from '@/models/FoodModel';
-import { BottomDialog, SelectedItem } from '@/components/utils/BottomModal';
+import { FoodModel, SelectedItem } from '@/models/FoodModel';
+import { BottomDialog } from '@/components/utils/BottomModal';
 import { useLocalSearchParams } from 'expo-router';
-import { getFoodByCategory } from '@/services/api';
+import { getFoodByCategory, updateMultipleProductInCart } from '@/services/api';
+import { FIREBASE_AUTH } from '@/services/firebase';
+import { User } from 'firebase/auth';
+import { useSnackBars } from '@/components/utils/snack';
 
 export const Category: React.FC = () => {
     const [foodItems, setFoodItems] = useState<FoodModel[]>([]);
     const [selectedItems, setSelectedItems] = useState<SelectedItem[]>([]);
     const [showBottomDialog, setShowBottomDialog] = useState(false);
+    const [user, setUser] = useState<User | null>(null);
+    const [isLoading, setIsLoading] = useState(false);
+    const { addAlert } = useSnackBars();
     const local = useLocalSearchParams();
     const banner = String(local.banner);
     const categoryName = String(local.categoryName)
     const categoryId = String(local.id);
 
     useEffect(() => {
+        setUser(FIREBASE_AUTH.currentUser)
         const getFoodRequest = getFoodByCategory(categoryId)
         getFoodRequest.then((listFood) => {
             setFoodItems(listFood)
@@ -38,8 +45,11 @@ export const Category: React.FC = () => {
     };
 
     const handleCartPress = () => {
-        console.log('Cart pressed');
-        // Navigate to cart or open cart modal
+        if (user !== null) {
+			router.push('/layout/cartscreen')
+		} else {
+			router.navigate('/(tabs)/account')
+		}
     };
 
     const handleMenuPress = () => {
@@ -48,6 +58,7 @@ export const Category: React.FC = () => {
     };
 
     const handleQuantityChange = (id: string, quantity: number) => {
+        
         setSelectedItems(prevItems => {
             const existingItemIndex = prevItems.findIndex(item => item.id === id);
             if (existingItemIndex !== -1) {
@@ -73,7 +84,29 @@ export const Category: React.FC = () => {
     };
 
     const handleCreateOrder = async () => {
-
+        if (user !== null) {
+            if (!isLoading) {
+                setIsLoading(true);
+                var prod_ids = []
+                var quantities = []
+                var prices = []
+                for (let index = 0; index < selectedItems.length; index++) {
+                    prod_ids.push(selectedItems[index].id)
+                    quantities.push(selectedItems[index].quantity)
+                    prices.push(selectedItems[index].price)
+                }
+                let req = await updateMultipleProductInCart(prod_ids, quantities, prices, user.email || '')
+                if (req) {
+                    addAlert("Thêm hàng vào giỏ thành công")
+                    setSelectedItems([])
+                } else {
+                    addAlert("Thêm hàng vào giỏ thất bại")
+                }
+                setIsLoading(false);
+            }
+        } else {
+            addAlert("Vui lòng đăng nhập để mua sản phẩm")
+        }
     }
 
     return (
@@ -103,6 +136,7 @@ export const Category: React.FC = () => {
                                 key={item.id}
                                 item={item}
                                 onQuantityChange={handleQuantityChange}
+                                onRefreshChoose={selectedItems}
                             />
                         ))}
                     </ScrollView>
@@ -112,6 +146,7 @@ export const Category: React.FC = () => {
                         selectedItems={selectedItems}
                         onPressOrder={() => handleCreateOrder()}
                         onClose={() => setShowBottomDialog(false)}
+                        isLoading={isLoading}
                     />
                 )}
             </MainViewFrame>
