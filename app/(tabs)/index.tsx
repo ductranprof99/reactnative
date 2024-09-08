@@ -98,7 +98,11 @@ const HomeScreen: React.FC = () => {
 	};
 
 	const handleOnTapCategory = (item: CategoryModel) => {
-		router.push({ pathname: `helper/category/[id]`, params: { id: item.catId, banner: item.banner, categoryName: item.name } });
+		router.push({ pathname: `/helper/category/[id]`, params: { id: item.catId, banner: item.banner, categoryName: item.name } });
+	}
+
+	const handleOnTapProduct = (item: FoodModel) => {
+		router.push({ pathname: `/helper/product/[id]`, params: { id: item.id } });
 	}
 
 	return (
@@ -138,7 +142,7 @@ const HomeScreen: React.FC = () => {
 						<Text style={styles.sectionTitle}>Món ăn thường ngày</Text>
 						<FlatList
 							data={homeFoods}
-							renderItem={({ item }) => <FoodItem item={item} />}
+							renderItem={({ item }) => <FoodItem item={item} onTap={handleOnTapProduct}  />}
 							keyExtractor={(item) => item.id}
 							scrollEnabled={false}
 						/>
