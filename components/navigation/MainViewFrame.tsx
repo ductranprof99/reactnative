@@ -7,7 +7,6 @@ interface ScreenWithHeaderProps {
 	onPush?: Boolean;
 	onSearchChange?: (text: string) => void;
 	onCartPress?: () => void;
-	onMenuPress?: () => void;
 }
 
 export const MainViewFrame: React.FC<ScreenWithHeaderProps> = ({
@@ -15,14 +14,12 @@ export const MainViewFrame: React.FC<ScreenWithHeaderProps> = ({
 	onPush,
 	onSearchChange,
 	onCartPress,
-	onMenuPress
 }) => {
 	return (
 		<SafeAreaView style={styles.container}>
 			<HeaderSearch
 				onSearchChange={onSearchChange}
 				onCartPress={onCartPress}
-				onMenuPress={onMenuPress}
 				onPush={onPush}
 			/>
 			<View style={styles.content}>

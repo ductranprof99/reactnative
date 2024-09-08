@@ -12,55 +12,61 @@ interface HistoryOrderItemProps {
 export const HistoryOrderItem: React.FC<HistoryOrderItemProps> = ({ order, onViewInvoice, onViewOrder }) => {
     const [foodItems, setFoodItems] = useState<FoodModel[]>([])
     useEffect(() => {
-		
-	}, []);
+
+    }, []);
+
+    const dateString = () => {
+        const varDate = new Date(Date.parse(order.order_date))
+        return `${varDate.getDate()}/${varDate.getMonth()}/${varDate.getFullYear()}`
+    }
+
     return (
         <View style={styles.container}>
+            <View style={styles.row}>
+                <Text style={styles.label}>Mã đặt hàng</Text>
+                <Text style={styles.value}>#{order.product_ids[0]}</Text>
+            </View>
             <View style={styles.header}>
                 <View>
-                    <Text style={styles.label}>Order Number:</Text>
-                    <Text style={styles.value}>#{order.product_ids[0]}</Text>
-                </View>
-                <View>
                     <Text style={styles.label}>Order Date:</Text>
-                    <Text style={styles.value}>{order.order_date}</Text>
+                    <Text style={styles.value}>{dateString()}</Text>
                 </View>
                 <View>
-                    <Text style={styles.label}>Total Amount:</Text>
-                    <Text style={styles.value}>${order.total.toFixed(2)}</Text>
+                    <Text style={styles.label}>Tổng cộng:</Text>
+                    <Text style={styles.value}>{order.total} đ</Text>
                 </View>
                 <View>
-                    <Text style={styles.label}>Status:</Text>
-                    <Text style={[styles.value, styles.status]}>{order.status}</Text>
+                    <Text style={styles.label}>Trạng thái</Text>
+                    <Text style={[styles.value, order.status === "Đã giao hàng" ? styles.shipped : order.status === "Đang giao hàng" ? styles.shipping : styles.shipCancelled ]}>{order.status}</Text>
                 </View>
             </View>
-            
+            {
+                (order.status === "Đang giao hàng") &&
+                <View>
+                    <Text style={styles.label}>Dự kiến giao hàng</Text>
+                    <Text style={styles.estimatedDelivery}>{getEstimatedDelivery(order.order_date)}</Text>
+                </View>
+            }
             <View style={styles.buttonContainer}>
                 {
-                    (order.status === "Đang giao hàng") &&
+                    (order.status === "Đã giao hàng") &&
                     <>
-                        <Text style={styles.estimatedDelivery}>{getEstimatedDelivery(order.order_date)}</Text>
                         <TouchableOpacity style={styles.button} onPress={() => onViewInvoice(order.id)}>
                             <Text style={styles.buttonText}>Xem hoá đơn đặt hàng</Text>
                         </TouchableOpacity>
                     </>
                 }
                 {
-                   (order.status === "Đã giao") && 
-                   <TouchableOpacity style={[styles.button, styles.primaryButton]} onPress={() => onViewOrder(order.id)}>
-                        <Text style={[styles.buttonText, styles.primaryButtonText]}>View Order</Text>
+                    (order.status === "Đã huỷ") &&
+                    <TouchableOpacity style={[styles.button, styles.primaryButton]} onPress={() => onViewOrder(order.id)}>
+                        <Text style={[styles.buttonText, styles.primaryButtonText]}>Xem đơn</Text>
                     </TouchableOpacity>
                 }
-                
+
             </View>
-            {
-                (order.status === "Đang giao hàng") &&
-                <Text style={styles.estimatedDelivery}>{getEstimatedDelivery(order.order_date)}</Text>
-            }
-            
             <FlatList
                 data={foodItems}
-                renderItem={({ item, index }) => 
+                renderItem={({ item, index }) =>
                     <View style={styles.productItem}>
                         <Image
                             src={item.image}
@@ -105,6 +111,9 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.1,
         shadowRadius: 4,
     },
+    row: {
+        marginBottom: 16,
+    },
     header: {
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -119,8 +128,14 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: '#333',
     },
-    status: {
+    shipped: {
         color: '#FF8C00',
+    },
+    shipping: {
+        color: 'green',
+    },
+    shipCancelled: {
+        color: 'red',
     },
     buttonContainer: {
         flexDirection: 'row',

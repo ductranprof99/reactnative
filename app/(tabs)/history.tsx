@@ -9,6 +9,7 @@ import { router } from 'expo-router';
 import { OrderModel } from '@/models/OrderModel';
 import HistoryOrderItem from '@/components/history/HistoryOrderItem';
 import { NoHistoryView } from '@/components/history/NoHistoryView';
+import { getHistoryOrder } from '@/services/api';
 
 export default function HistoryScreen() {
 	const [user, setUser] = useState<User | null>(null)
@@ -18,6 +19,11 @@ export default function HistoryScreen() {
 		onAuthStateChanged(FIREBASE_AUTH, (user) => {
 			setUser(user)
 		})
+		const getHistory = async () => {
+			const listHistory = await getHistoryOrder()
+			setListHistoryOrder(listHistory)
+		}
+		getHistory()
 	}, [user]);
 
 	const handleSearchChange = (text: string) => {
@@ -31,10 +37,6 @@ export default function HistoryScreen() {
 		} else {
 			setLoginModalVisible(true)
 		}
-	};
-
-	const handleMenuPress = () => {
-		router.push('/layout/menuscreen')
 	};
 
 	const handleLoginPress = () => {
@@ -58,7 +60,6 @@ export default function HistoryScreen() {
 			<MainViewFrame
 				onSearchChange={handleSearchChange}
 				onCartPress={handleCartPress}
-				onMenuPress={handleMenuPress}
 			>
 				{user === null ? (
 					<View style={styles.container}>

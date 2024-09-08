@@ -1,5 +1,5 @@
 import { CategoryModel } from "@/models/CategoryModel";
-import { FIRESTORE_DB } from "./firebase";
+import { FIREBASE_AUTH, FIRESTORE_DB } from "./firebase";
 import { addDoc, collection, deleteDoc, doc, getDocs, limit, orderBy, query, setDoc, startAt, updateDoc, where } from "firebase/firestore";
 import { FoodModel } from "@/models/FoodModel";
 import { OrderModel } from "@/models/OrderModel";
@@ -132,11 +132,15 @@ export const getBatchFood = async (prev_name: string = "", batchFood: number = 5
 };
 
 // ===================== cart ======================
-export const getCart = async (email: string): Promise<OrderModel | null> => {
+export const getCart = async (): Promise<OrderModel | null> => {
     const db = FIRESTORE_DB;
+    const user_email = FIREBASE_AUTH.currentUser?.email
+    if (user_email === null) {
+        return null;
+    }
     const ref = collection(db, "orders");
     const q = query(ref, 
-        where("user_email", "==", email),
+        where("user_email", "==", user_email),
         where("status", "==", "Đang chuẩn bị"),
         limit(1)
     );
@@ -159,13 +163,16 @@ export const getCart = async (email: string): Promise<OrderModel | null> => {
     return result;
 }
 
-export const getHistoryOrder = async (email: string): Promise<OrderModel[]> => {
+export const getHistoryOrder = async (): Promise<OrderModel[]> => {
     const db = FIRESTORE_DB;
+    const user_email = FIREBASE_AUTH.currentUser?.email
+    if (user_email === null) {
+        return [];
+    }
     const ref = collection(db, "orders");
     const q = query(ref, 
-        where("user_email", "==", email),
-        where("status", "!=", "Đang chuẩn bị"),
-        where("status", "!=", "Đang vận chuyển"),
+        where("user_email", "==", user_email),
+        where("status", "in", ["Đang giao hàng", "Đã giao hàng", "Đã huỷ"]),
     );
     const snapshot = await getDocs(q);
     var result: OrderModel[] = [];
@@ -186,11 +193,15 @@ export const getHistoryOrder = async (email: string): Promise<OrderModel[]> => {
     return result;
 }
 
-export const getShippingOrder = async (email: string): Promise<OrderModel[]> => {
+export const getShippingOrder = async (): Promise<OrderModel[]> => {
     const db = FIRESTORE_DB;
+    const user_email = FIREBASE_AUTH.currentUser?.email
+    if (user_email === null) {
+        return [];
+    }
     const ref = collection(db, "orders");
     const q = query(ref, 
-        where("user_email", "==", email),
+        where("user_email", "==", user_email),
         where("status", "==", "Đang chuẩn bị")
     );
     const snapshot = await getDocs(q);
@@ -213,7 +224,7 @@ export const getShippingOrder = async (email: string): Promise<OrderModel[]> => 
 }
 
 export const updateCurrentCart = async (product_id: string, quantity: number, price: number, email: string, address?: string): Promise<boolean> => {
-    const current_cart = await getCart(email);
+    const current_cart = await getCart();
     const db = FIRESTORE_DB;
     let result = false;
 
@@ -304,7 +315,7 @@ export const updateMultipleProductInCart = async (
         return false;
     }
 
-    const current_cart = await getCart(email);
+    const current_cart = await getCart();
     const db = FIRESTORE_DB;
     let result = false;
 

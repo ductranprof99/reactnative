@@ -52,11 +52,6 @@ export const Category: React.FC = () => {
 		}
     };
 
-    const handleMenuPress = () => {
-        console.log('Menu pressed');
-        // Open menu or navigate as needed
-    };
-
     const handleQuantityChange = (id: string, quantity: number) => {
         
         setSelectedItems(prevItems => {
@@ -115,7 +110,6 @@ export const Category: React.FC = () => {
             <MainViewFrame
                 onSearchChange={handleSearchChange}
                 onCartPress={handleCartPress}
-                onMenuPress={handleMenuPress}
                 onPush={true}
             >
                 <View style={styles.banner}>

@@ -97,11 +97,6 @@ const HomeScreen: React.FC = () => {
 		}
 	};
 
-	const handleMenuPress = () => {
-		console.log('Menu pressed');
-		// Open menu or navigate as needed
-	};
-
 	const handleOnTapCategory = (item: CategoryModel) => {
 		router.push({ pathname: `helper/category/[id]`, params: { id: item.catId, banner: item.banner, categoryName: item.name } });
 	}
@@ -110,7 +105,6 @@ const HomeScreen: React.FC = () => {
 		<MainViewFrame
 			onSearchChange={handleSearchChange}
 			onCartPress={handleCartPress}
-			onMenuPress={handleMenuPress}
 		>
 			<View>
 				<ScrollView

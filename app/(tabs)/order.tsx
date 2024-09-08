@@ -30,10 +30,6 @@ export default function OrderScreen() {
 		}
 	};
 
-	const handleMenuPress = () => {
-		router.push('/layout/menuscreen')
-	};
-
 	const handleLoginPress = () => {
 		setLoginModalVisible(true);
 	};
@@ -47,7 +43,6 @@ export default function OrderScreen() {
 			<MainViewFrame
 				onSearchChange={handleSearchChange}
 				onCartPress={handleCartPress}
-				onMenuPress={handleMenuPress}
 			>
 				{user == null ? (
 					<View style={styles.container}>

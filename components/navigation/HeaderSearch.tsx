@@ -6,14 +6,12 @@ import { router } from 'expo-router';
 interface HeaderSearchProps {
     onSearchChange?: (text: string) => void;
     onCartPress?: () => void;
-    onMenuPress?: () => void;
     onPush?: Boolean;
 }
 
 const HeaderSearch: React.FC<HeaderSearchProps> = ({
     onSearchChange,
     onCartPress,
-    onMenuPress,
     onPush
 }) => {
     const backIcon = Platform.OS === "ios" ? "chevron-back" : "arrow-back-sharp";
@@ -45,13 +43,6 @@ const HeaderSearch: React.FC<HeaderSearchProps> = ({
                 color="#000"
                 style={styles.icon}
                 onPress={onCartPress}
-            />
-            <Feather
-                name="menu"
-                size={24}
-                color="#000"
-                style={styles.icon}
-                onPress={onMenuPress}
             />
         </View>
     );

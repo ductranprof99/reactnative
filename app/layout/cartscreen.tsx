@@ -34,7 +34,7 @@ export const CartScreen: React.FC = () => {
             const fetchCartItems = async () => {
                 const userInfo = await getUserInfo(email);
                 setUserPhone(userInfo.phone);
-                const cartData = await getCart(email);
+                const cartData = await getCart();
                 if (cartData !== null) {
                     setShipAddress(cartData.ship_address);
                     if (cartData.product_ids.length !== 0) {
