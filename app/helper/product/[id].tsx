@@ -14,7 +14,7 @@ const FoodItemDetail: React.FC = () => {
     const [food, setFoodItems] = useState<FoodModel | null>(null);
     const [quantity, setQuantity] = useState(1);
     const [isLoadingAPI, setIsLoadingAPI] = useState(true);
-    const [isWaiting, setIsWaiting] = useState(true);
+    const [isWaiting, setIsWaiting] = useState(false);
     const foodId = String((useLocalSearchParams().id))
     const { addAlert } = useSnackBars();
     useEffect(() => {
@@ -61,6 +61,7 @@ const FoodItemDetail: React.FC = () => {
             } else {
                 addAlert("Thêm vào giỏ hàng thất bại!!!");
             }
+            setIsWaiting(true);
         } else {
             addAlert("Hệ thống đang xử lý yêu cầu của bạn!!!");
         }
