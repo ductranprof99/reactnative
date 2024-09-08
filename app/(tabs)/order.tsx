@@ -1,4 +1,4 @@
-import { Modal, ScrollView, StyleSheet, View, TouchableWithoutFeedback } from 'react-native';
+import { Modal, ScrollView, StyleSheet, View, TouchableWithoutFeedback, Text, FlatList } from 'react-native';
 import { MainViewFrame } from '@/components/navigation/MainViewFrame';
 import { useEffect, useState } from 'react';
 import { RequireLoginScreen } from '@/components/navigation/RequireLoginFrame';
@@ -6,16 +6,28 @@ import LoginScreen from '../layout/loginscreen';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { FIREBASE_AUTH } from '@/services/firebase';
 import { router } from 'expo-router';
+import { OrderModel } from '@/models/OrderModel';
+import { getShippingOrder } from '@/services/api';
+import LottieView from 'lottie-react-native';
+import { NoOrderView } from '@/components/order/NoOrderView';
 
 export default function OrderScreen() {
 	const [user, setUser] = useState<User | null>(null)
 	const [isLoginModalVisible, setLoginModalVisible] = useState(false);
+	const [listShippingOrder, setListShippingOrder] = useState<OrderModel[]>([])
+	const [isLoadAPI, setIsLoadAPI] = useState(true);
 	useEffect(() => {
-        onAuthStateChanged(FIREBASE_AUTH, (user) => {
-            setUser(user)
-        })
-    }, [user]);
-	
+		onAuthStateChanged(FIREBASE_AUTH, (user) => {
+			setUser(user)
+		});
+		const getOrders = async () => {
+			const listOrder = await getShippingOrder();
+			setListShippingOrder(listOrder);
+			setIsLoadAPI(false);
+		}
+		getOrders()
+	}, [user]);
+
 
 	const handleSearchChange = (text: string) => {
 		console.log('Search text:', text);
@@ -46,14 +58,30 @@ export default function OrderScreen() {
 			>
 				{user == null ? (
 					<View style={styles.container}>
-						<RequireLoginScreen onLoginPress={handleLoginPress}/>
+						<RequireLoginScreen onLoginPress={handleLoginPress} />
 					</View>
 				) : (
-					<View>
-						<ScrollView>
-							
-						</ScrollView>
-					</View>
+					isLoadAPI ?
+						<View style={styles.lottieContainer} >
+							<LottieView style={styles.lottieView} source={require('@/assets/lottie/shipping-loading.json')} autoPlay loop />
+						</View>
+						: (
+							listShippingOrder.length === 0 ?
+								<NoOrderView />
+								: <View>
+									<View style={styles.scrollVerticalSection}>
+										<Text style={styles.sectionTitle}>Đơn hàng</Text>
+										<FlatList
+											data={listShippingOrder}
+											renderItem={({ item }) =>
+												<></>
+											}
+											keyExtractor={(item) => item.id}
+											scrollEnabled={false}
+										/>
+									</View>
+								</View>
+						)
 				)}
 			</MainViewFrame>
 
@@ -82,14 +110,42 @@ const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 	},
+	lottieContainer: {
+		flex: 1,
+		padding: 0,
+		margin: 0,
+		justifyContent: 'center',
+		alignItems: 'center',
+		backgroundColor: "#ffffff00",
+		height: 300,
+		width: '100%'
+	},
+	lottieView: {
+		flex: 1,
+		justifyContent: 'center',
+		alignItems: 'center',
+		backgroundColor: '#fff',
+		height: 300,
+		width: '100%'
+	},
 	modalOverlay: {
 		flex: 1,
 		justifyContent: 'center',
 		alignItems: 'center',
-		backgroundColor: 'rgba(0, 0, 0, 0)', 
+		backgroundColor: 'rgba(0, 0, 0, 0)',
 	},
 	modalContent: {
 		width: '100%', // Full width minus some padding
-		height: "75%", 
+		height: "75%",
+	},
+	scrollVerticalSection: {
+		padding: 10,
+	},
+	sectionTitle: {
+		fontSize: 30,
+		fontWeight: 'bold',
+		color: "#4CAF50",
+		marginBottom: 16,
+		paddingHorizontal: 16,
 	},
 });

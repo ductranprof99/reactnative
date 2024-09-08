@@ -20,7 +20,7 @@ export default function HistoryScreen() {
 	useEffect(() => {
 		onAuthStateChanged(FIREBASE_AUTH, (user) => {
 			setUser(user);
-		})
+		});
 		const getHistory = async () => {
 			const listHistory = await getHistoryOrder();
 			setListHistoryOrder(listHistory);
@@ -79,7 +79,7 @@ export default function HistoryScreen() {
 							:
 							<View>
 								<View style={styles.scrollVerticalSection}>
-									<Text style={styles.sectionTitle}>Món ăn thường ngày</Text>
+									<Text style={styles.sectionTitle}>Lịch sử hoá đơn</Text>
 									<FlatList
 										data={listHistoryOrder}
 										renderItem={({ item }) =>
@@ -154,8 +154,9 @@ const styles = StyleSheet.create({
 		padding: 10,
 	},
 	sectionTitle: {
-		fontSize: 20,
+		fontSize: 30,
 		fontWeight: 'bold',
+		color: "#4CAF50",
 		marginBottom: 16,
 		paddingHorizontal: 16,
 	},

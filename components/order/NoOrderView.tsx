@@ -3,10 +3,10 @@ import { View, Image, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import { router } from 'expo-router';
 import LottieView from 'lottie-react-native';
 
-export const NoHistoryView: React.FC = () => {
+export const NoOrderView: React.FC = () => {
     return (
         <View style={styles.container}>
-            <LottieView style={styles.lottieView} source={require('@/assets/lottie/empty-history.json')} autoPlay loop />
+            <LottieView style={styles.lottieView} source={require('@/assets/lottie/empty-order.json')} autoPlay loop />
             <TouchableOpacity style={styles.button} onPress={() => {
                 router.navigate('/(tabs)')
             }}>

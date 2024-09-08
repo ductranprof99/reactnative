@@ -1,6 +1,7 @@
 import { MainViewFrame } from '@/components/navigation/MainViewFrame';
+import { useSnackBars } from '@/components/utils/snack';
 import { FoodModel } from '@/models/FoodModel';
-import { getFoodByListId } from '@/services/api';
+import { getFoodByListId, updateMultipleProductInCart } from '@/services/api';
 import { FIREBASE_AUTH } from '@/services/firebase';
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { User } from 'firebase/auth';
@@ -13,7 +14,9 @@ const FoodItemDetail: React.FC = () => {
     const [food, setFoodItems] = useState<FoodModel | null>(null);
     const [quantity, setQuantity] = useState(1);
     const [isLoadingAPI, setIsLoadingAPI] = useState(true);
+    const [isWaiting, setIsWaiting] = useState(true);
     const foodId = String((useLocalSearchParams().id))
+    const { addAlert } = useSnackBars();
     useEffect(() => {
         const user = FIREBASE_AUTH.currentUser;
         setUser(user);
@@ -34,14 +37,33 @@ const FoodItemDetail: React.FC = () => {
 
     const handleCartPress = () => {
         if (user !== null) {
-            router.push('/layout/cartscreen')
+            router.push('/layout/cartscreen');
         } else {
-            router.push('/(tabs)/account')
+            router.push('/(tabs)/account');
         }
     };
 
     const onAddToCart = async () => {
-
+        if (user === null) {
+            addAlert("Vui lòng đăng nhập để thêm vào giỏ hàng");
+            router.navigate("/(tabs)/account");
+        } else if (!isWaiting && food !== null && user !== null) {
+            const mail = user.email ?? "";
+            setIsWaiting(true);
+            const req = await updateMultipleProductInCart(
+                [food.id],
+                [quantity],
+                [food.price],
+                mail
+            );
+            if (req) {
+                addAlert("Thêm vào giỏ hàng thành công!!!")
+            } else {
+                addAlert("Thêm vào giỏ hàng thất bại!!!");
+            }
+        } else {
+            addAlert("Hệ thống đang xử lý yêu cầu của bạn!!!");
+        }
     }
 
     return (
@@ -126,7 +148,7 @@ const styles = StyleSheet.create({
     infoContainer: {
         marginTop: 16,
         marginBottom: 20,
-        marginHorizontal: 10,
+        marginHorizontal: 30,
     },
     name: {
         fontSize: 18,
