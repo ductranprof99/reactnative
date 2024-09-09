@@ -2,7 +2,7 @@ import { FoodModel } from "@/models/FoodModel";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, FlatList, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { OrderModel } from "@/models/OrderModel";
-import { getCart, getFoodByListId, updateCurrentCart } from "@/services/api";
+import { getCart, getFoodByListId, placeOrder, updateCurrentCart } from "@/services/api";
 import { router, Stack } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { FIREBASE_AUTH } from "@/services/firebase";
@@ -95,16 +95,14 @@ export const CartScreen: React.FC = () => {
     const handlePlaceOrder = async () => {
         if (allowEdit) {
             setAllowEdit(false)
-            const order: Omit<OrderModel, 'id' | 'status'> = {
-                order_date: new Date().toISOString(),
-                product_ids: cartItems.map(item => item.id),
-                product_quantities: cartItems.map(item => item.quantity),
-                user_email: userEmail,
-                total: totalPrice,
-                ship_address: shipAddress
-            };
-
-            console.log('Placing order:', order);
+            const req = await placeOrder();
+            if (req) {
+                addAlert("Đặt hàng thành công");
+                setCartItems([]);
+                router.navigate('/(tabs)')
+            } else {
+                addAlert("Đặt hàng thất bại!!!");
+            }
             // Here you would typically send this order to your backend
             setAllowEdit(true)
         }

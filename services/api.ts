@@ -372,4 +372,22 @@ export const updateMultipleProductInCart = async (
     return result;
 };
 
+export const placeOrder = async (): Promise<boolean> => {
+    const db = FIRESTORE_DB;
+    const current_cart = await getCart();
+    if (current_cart === null) {
+        return false;
+    }
+    const update_cart: Partial<OrderModel> = {
+        status: "Đang vận chuyển"
+    };
+    try {
+        await updateDoc(doc(db, "orders", current_cart.id), update_cart)
+        return true;
+    } catch (error) {
+        console.error("Error updating cart:", error);
+        return false;
+    }
+}
+
 // ===================== order ======================
