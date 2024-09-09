@@ -27,7 +27,7 @@ export const FoodItem: React.FC<FoodItemProps> = ({ item, onTap }) => {
 
 const styles = StyleSheet.create({
     container: {
-        width: width - 50, // Full width minus padding
+        width: width - 50, 
     },
     viewWrapper: {
         width: "100%",

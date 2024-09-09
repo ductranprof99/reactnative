@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, Dimensions, FlatList, ScrollView, StyleSheet, ViewToken, NativeScrollEvent } from 'react-native';
 import { CategoryIndicator } from '@/components/home/CategoryIndicator';
 import { CategoryItem } from '@/components/home/CategoryItem';
-import { RecommendedItem } from '@/components/home/RecommendItem';
 import { FoodModel } from '@/models/FoodModel';
 import { CategoryModel } from '@/models/CategoryModel';
 import { FoodItem } from '@/components/home/FoodItem';
@@ -136,7 +135,7 @@ const HomeScreen: React.FC = () => {
 					</View>
 					<View style={styles.scrollVerticalSection}>
 						<Text style={styles.sectionTitle}>Có thể bạn thích</Text>
-						<RecommendedPaging listFood={homeRecommendFood} />
+						<RecommendedPaging listFood={homeRecommendFood} onTap={handleOnTapProduct} />
 					</View>
 					<View style={styles.scrollVerticalSection}>
 						<Text style={styles.sectionTitle}>Món ăn thường ngày</Text>

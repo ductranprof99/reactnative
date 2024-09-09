@@ -1,17 +1,19 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, Image, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
 import { FoodModel } from '@/models/FoodModel';
 
 interface RecommendedItemProps {
   item: FoodModel;
+  onTap: (item: FoodModel) => void;
 }
 
 const { width } = Dimensions.get('window');
 const itemWidth = width - 40 - 12; // Assuming 16px padding on each side
 
-export const RecommendedItem: React.FC<RecommendedItemProps> = ({ item }) => {
+export const RecommendedItem: React.FC<RecommendedItemProps> = ({ item, onTap }) => {
     return (
-        <View style={styles.container}>
+        <TouchableOpacity style={styles.container} onPress={() => onTap(item)} >
+        <View style={styles.viewWrapper}>
             <Image src={item.image} style={styles.image} />
             <View style={styles.infoContainer}>
                 <Text style={styles.name}>{item.name}</Text>
@@ -19,6 +21,7 @@ export const RecommendedItem: React.FC<RecommendedItemProps> = ({ item }) => {
                 <Text style={styles.description}>{item.description}</Text>
             </View>
         </View>
+        </TouchableOpacity>
     );
 };
 
@@ -38,6 +41,10 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.23,
         shadowRadius: 2.62,
         elevation: 4,
+    },
+    viewWrapper: {
+        width: "100%",
+        height: "100%",
     },
     image: {
         width: '100%',
