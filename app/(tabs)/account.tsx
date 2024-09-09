@@ -5,9 +5,13 @@ import { onAuthStateChanged, User } from 'firebase/auth';
 import { FIREBASE_AUTH } from '@/services/firebase';
 import { UserProfileScreen } from '@/app/layout/userdetailscreen';
 import { getUserInfo, updateUserInfo, UserInfo } from '@/services/auth';
+import { useIsFocused } from "@react-navigation/native";
+
 export default function AccountScreen() {
     const [user, setUser] = useState<User | null>(null)
     const [profile, setProfile] = useState<UserInfo | null>(null)
+    const isFocused = useIsFocused();
+
     useEffect(() => {
         onAuthStateChanged(FIREBASE_AUTH, (user) => {
             setUser(user)
@@ -22,7 +26,7 @@ export default function AccountScreen() {
                 // make sure to catch any error
                 .catch(console.error);;
         }
-    }, [user]);
+    }, [user, isFocused]);
 
     function handleLogin() {
     }

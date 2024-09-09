@@ -10,23 +10,28 @@ import { OrderModel } from '@/models/OrderModel';
 import { getShippingOrder } from '@/services/api';
 import LottieView from 'lottie-react-native';
 import { NoOrderView } from '@/components/order/NoOrderView';
+import { useIsFocused } from "@react-navigation/native";
 
 export default function OrderScreen() {
 	const [user, setUser] = useState<User | null>(null)
 	const [isLoginModalVisible, setLoginModalVisible] = useState(false);
 	const [listShippingOrder, setListShippingOrder] = useState<OrderModel[]>([])
 	const [isLoadAPI, setIsLoadAPI] = useState(true);
+	const isFocused = useIsFocused();
+
 	useEffect(() => {
-		onAuthStateChanged(FIREBASE_AUTH, (user) => {
-			setUser(user)
-		});
-		const getOrders = async () => {
-			const listOrder = await getShippingOrder();
-			setListShippingOrder(listOrder);
-			setIsLoadAPI(false);
+		if (isFocused) {
+			onAuthStateChanged(FIREBASE_AUTH, (user) => {
+				setUser(user)
+			});
+			const getOrders = async () => {
+				const listOrder = await getShippingOrder();
+				setListShippingOrder(listOrder);
+				setIsLoadAPI(false);
+			}
+			getOrders();
 		}
-		getOrders()
-	}, [user]);
+	}, [user, isFocused]);
 
 
 	const handleSearchChange = (text: string) => {

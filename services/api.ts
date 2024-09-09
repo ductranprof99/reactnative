@@ -202,7 +202,7 @@ export const getShippingOrder = async (): Promise<OrderModel[]> => {
     const ref = collection(db, "orders");
     const q = query(ref, 
         where("user_email", "==", user_email),
-        where("status", "==", "Đang chuẩn bị")
+        where("status", "==", "Đang giao hàng")
     );
     const snapshot = await getDocs(q);
     var result: OrderModel[] = [];

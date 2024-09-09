@@ -11,23 +11,28 @@ import HistoryOrderItem from '@/components/history/HistoryOrderItem';
 import { NoHistoryView } from '@/components/history/NoHistoryView';
 import { getHistoryOrder } from '@/services/api';
 import LottieView from 'lottie-react-native';
+import { useIsFocused } from "@react-navigation/native";
 
 export default function HistoryScreen() {
 	const [user, setUser] = useState<User | null>(null)
 	const [isLoginModalVisible, setLoginModalVisible] = useState(false);
 	const [listHistoryOrder, setListHistoryOrder] = useState<OrderModel[]>([])
 	const [isLoadAPI, setIsLoadAPI] = useState(true);
+	const isFocused = useIsFocused();
+
 	useEffect(() => {
-		onAuthStateChanged(FIREBASE_AUTH, (user) => {
-			setUser(user);
-		});
-		const getHistory = async () => {
-			const listHistory = await getHistoryOrder();
-			setListHistoryOrder(listHistory);
-			setIsLoadAPI(false);
+		if (isFocused) {
+			onAuthStateChanged(FIREBASE_AUTH, (user) => {
+				setUser(user);
+			});
+			const getHistory = async () => {
+				const listHistory = await getHistoryOrder();
+				setListHistoryOrder(listHistory);
+				setIsLoadAPI(false);
+			}
+			getHistory()
 		}
-		getHistory()
-	}, [user]);
+	}, [user, isFocused]);
 
 	const handleSearchChange = (text: string) => {
 		console.log('Search text:', text);
